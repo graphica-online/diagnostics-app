@@ -1,0 +1,2409 @@
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>VOIDSENSE — UI Kit</title>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Sora:wght@200;300;400;500;600;700&family=Space+Mono:wght@400;700&display=swap"
+      rel="stylesheet"
+    />
+
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            fontFamily: {
+              sora: ["Sora", "sans-serif"],
+              mono: ['"Space Mono"', "monospace"],
+            },
+            colors: {
+              void: "#050507",
+              holo: "#7B61FF",
+              "st-pos": "#4ADE80",
+              "st-neg": "#FB7185",
+              ch: {
+                1: "#EF4444",
+                2: "#F97316",
+                3: "#EAB308",
+                4: "#22C55E",
+                5: "#EC4899",
+                6: "#A855F7",
+                7: "#38BDF8",
+                8: "#2563EB",
+                9: "#8B5CF6",
+              },
+            },
+            borderRadius: {
+              "2xl": "16px",
+              "3xl": "24px",
+            },
+          },
+        },
+      };
+    </script>
+
+    <style>
+      body {
+        background: #050507;
+      }
+
+      /* ═══ GLASS ═══ */
+      .glass {
+        background: linear-gradient(
+          135deg,
+          rgba(255, 255, 255, 0.07) 0%,
+          rgba(255, 255, 255, 0.02) 50%,
+          rgba(255, 255, 255, 0.05) 100%
+        );
+        backdrop-filter: blur(40px) saturate(1.6);
+        -webkit-backdrop-filter: blur(40px) saturate(1.6);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        box-shadow:
+          inset 0 0.5px 0 0 rgba(255, 255, 255, 0.08),
+          0 8px 32px -8px rgba(0, 0, 0, 0.5);
+      }
+
+      .glass-solid {
+        background: linear-gradient(
+          135deg,
+          rgba(12, 12, 20, 0.8) 0%,
+          rgba(12, 12, 20, 0.6) 100%
+        );
+        backdrop-filter: blur(60px) saturate(1.8);
+        -webkit-backdrop-filter: blur(60px) saturate(1.8);
+        border: 1px solid rgba(255, 255, 255, 0.06);
+      }
+
+      /* ═══ HOLO SHIMMER ═══ */
+      .holo-shimmer {
+        position: relative;
+        overflow: hidden;
+      }
+      .holo-shimmer::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(
+          105deg,
+          transparent 30%,
+          rgba(123, 97, 255, 0.05) 38%,
+          rgba(0, 176, 255, 0.04) 44%,
+          rgba(224, 64, 251, 0.03) 50%,
+          transparent 58%
+        );
+        background-size: 250% 100%;
+        animation: holo-slide 5s ease-in-out infinite;
+        pointer-events: none;
+        border-radius: inherit;
+        z-index: 1;
+      }
+      @keyframes holo-slide {
+        0%,
+        100% {
+          background-position: 200% center;
+        }
+        50% {
+          background-position: -50% center;
+        }
+      }
+      .holo-shimmer > * {
+        position: relative;
+        z-index: 2;
+      }
+
+      /* ═══ AMBIENT BLOBS ═══ */
+      @keyframes drift {
+        0%,
+        100% {
+          transform: translate(0, 0) scale(1);
+        }
+        33% {
+          transform: translate(15px, -20px) scale(1.05);
+        }
+        66% {
+          transform: translate(-10px, 15px) scale(0.97);
+        }
+      }
+
+      /* ═══ CENTER CIRCLE ═══ */
+      .ch-circle {
+        position: relative;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      .ch-circle .ch-ring {
+        position: absolute;
+        inset: 0;
+        border-radius: 50%;
+        border: 1.5px solid;
+        opacity: 0.4;
+      }
+      .ch-circle .ch-fill {
+        border-radius: 50%;
+        transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+      }
+
+      /* ═══ GLOW PULSE ═══ */
+      @keyframes glow-breathe {
+        0%,
+        100% {
+          opacity: 0.3;
+          transform: scale(1);
+        }
+        50% {
+          opacity: 0.6;
+          transform: scale(1.08);
+        }
+      }
+
+      /* ═══ BUTTONS ═══ */
+      .btn-holo {
+        background: linear-gradient(135deg, #7b61ff 0%, #e040fb 100%);
+        color: white;
+        box-shadow: 0 0 28px rgba(123, 97, 255, 0.25);
+        transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+      }
+      .btn-holo:hover {
+        box-shadow: 0 0 36px rgba(123, 97, 255, 0.4);
+        transform: translateY(-1px);
+      }
+      .btn-holo:active {
+        transform: scale(0.97);
+      }
+
+      /* ═══ GLOBAL ═══ */
+      ::selection {
+        background: rgba(123, 97, 255, 0.3);
+        color: white;
+      }
+      ::-webkit-scrollbar {
+        width: 3px;
+      }
+      ::-webkit-scrollbar-track {
+        background: transparent;
+      }
+      ::-webkit-scrollbar-thumb {
+        background: rgba(255, 255, 255, 0.06);
+        border-radius: 2px;
+      }
+    </style>
+  </head>
+
+  <body class="font-sora text-white/80 min-h-screen relative">
+    <!-- ═══ AMBIENT BACKGROUND ═══ -->
+    <div class="fixed inset-0 pointer-events-none overflow-hidden z-0">
+      <div
+        style="
+          position: absolute;
+          top: -8%;
+          left: -12%;
+          width: 500px;
+          height: 500px;
+          border-radius: 50%;
+          background: rgba(30, 27, 120, 0.04);
+          filter: blur(130px);
+          animation: drift 14s ease-in-out infinite;
+        "
+      ></div>
+      <div
+        style="
+          position: absolute;
+          bottom: -10%;
+          right: -8%;
+          width: 420px;
+          height: 420px;
+          border-radius: 50%;
+          background: rgba(90, 50, 160, 0.035);
+          filter: blur(120px);
+          animation: drift 18s ease-in-out infinite 3s;
+        "
+      ></div>
+      <div
+        style="
+          position: absolute;
+          top: 40%;
+          left: 50%;
+          width: 350px;
+          height: 350px;
+          border-radius: 50%;
+          background: rgba(20, 30, 100, 0.025);
+          filter: blur(100px);
+          animation: drift 16s ease-in-out infinite 7s;
+        "
+      ></div>
+    </div>
+
+    <!-- ═══ NOISE ═══ -->
+    <div
+      class="fixed inset-0 pointer-events-none z-[1]"
+      style="
+        opacity: 0.025;
+        background-image: url(&quot;data:image/svg+xml,%3Csvg viewBox=%220 0 256 256%22 xmlns=%22http://www.w3.org/2000/svg%22%3E%3Cfilter id=%22n%22%3E%3CfeTurbulence type=%22fractalNoise%22 baseFrequency=%22.85%22 numOctaves=%224%22 stitchTiles=%22stitch%22/%3E%3C/filter%3E%3Crect width=%22100%25%22 height=%22100%25%22 filter=%22url(%23n)%22/%3E%3C/svg%3E&quot;);
+      "
+    ></div>
+
+    <!-- ═══ CONTENT ═══ -->
+    <div
+      class="relative z-10 max-w-[420px] mx-auto px-5 pt-10 pb-20 space-y-20"
+    >
+      <!-- ────────────────────────────────────── -->
+      <!-- MODULE 01: HERO                       -->
+      <!-- ────────────────────────────────────── -->
+      <section class="text-center space-y-6">
+        <p
+          class="font-mono text-[9px] font-bold uppercase tracking-[0.2em] text-white/20"
+        >
+          01 — Hero
+        </p>
+
+        <!-- Holo badge -->
+        <div
+          class="inline-flex items-center gap-2.5 px-4 py-2 rounded-full border border-holo/15 bg-holo/[0.04]"
+        >
+          <span
+            class="w-1.5 h-1.5 rounded-full bg-holo"
+            style="
+              box-shadow: 0 0 8px rgba(123, 97, 255, 0.6);
+              animation: glow-breathe 2.5s ease-in-out infinite;
+            "
+          ></span>
+          <span
+            class="font-mono text-[9px] font-bold uppercase tracking-[0.18em] text-holo/80"
+            >13 центров • 3 мира</span
+          >
+        </div>
+
+        <!-- Display heading: ExtraLight + Bold contrast -->
+        <div>
+          <h1
+            class="text-[36px] font-extralight tracking-[-0.04em] leading-[0.95] text-white/80"
+          >
+            Узнай свой
+          </h1>
+          <h1
+            class="text-[36px] font-bold tracking-[-0.04em] leading-[1.1] text-white mt-1"
+          >
+            энергетический<br />
+            <span
+              style="
+                background: linear-gradient(
+                  90deg,
+                  #7b61ff 0%,
+                  #38bdf8 50%,
+                  #8b5cf6 100%
+                );
+                -webkit-background-clip: text;
+                -webkit-text-fill-color: transparent;
+              "
+            >
+              профиль
+            </span>
+          </h1>
+        </div>
+
+        <!-- Body text: Sora Light -->
+        <p
+          class="text-[14px] font-light text-white/40 tracking-[-0.03em] leading-[1.7] max-w-[280px] mx-auto"
+        >
+          127 вопросов. 20 минут. Полная карта центров, архетип внутреннего
+          ребёнка и персональная сказка.
+        </p>
+
+        <!-- CTA — holo shimmer -->
+        <div class="pt-2">
+          <button
+            class="btn-holo holo-shimmer mx-auto px-8 py-4 rounded-2xl font-semibold text-[15px] tracking-[-0.02em] flex items-center gap-2.5"
+          >
+            <span>Начать диагностику</span>
+            <svg
+              class="w-4 h-4 opacity-70"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.5"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3"
+              />
+            </svg>
+          </button>
+        </div>
+      </section>
+
+      <!-- ────────────────────────────────────── -->
+      <!-- MODULE 02: BUTTONS                    -->
+      <!-- ────────────────────────────────────── -->
+      <section class="space-y-5">
+        <p
+          class="font-mono text-[9px] font-bold uppercase tracking-[0.2em] text-white/20 pb-3 border-b border-white/[0.06]"
+        >
+          02 — Кнопки
+        </p>
+
+        <!-- Primary / Holo -->
+        <button
+          class="btn-holo holo-shimmer w-full py-4 rounded-2xl font-semibold text-[15px] tracking-[-0.02em] flex items-center justify-center gap-2"
+        >
+          Пройти тест
+          <svg
+            class="w-4 h-4 opacity-70"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.5"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3"
+            />
+          </svg>
+        </button>
+
+        <!-- Glass / Secondary -->
+        <button
+          class="glass w-full py-3.5 px-5 rounded-2xl font-medium text-[15px] tracking-[-0.02em] text-white/80 hover:border-white/12 active:scale-[0.97] transition-all flex items-center justify-between"
+        >
+          <span>Полный результат</span>
+          <span class="font-mono text-[10px] font-bold text-white/20">→</span>
+        </button>
+
+        <!-- Outline / Holo border -->
+        <button
+          class="w-full py-3.5 px-5 rounded-2xl bg-transparent border border-holo/20 font-semibold text-[15px] tracking-[-0.02em] text-holo hover:border-holo/40 hover:bg-holo/[0.04] active:scale-[0.97] transition-all"
+        >
+          Хронология тестов
+        </button>
+
+        <!-- Ghost / Text link -->
+        <button
+          class="w-full py-2.5 font-medium text-[13px] text-holo hover:bg-holo/[0.05] rounded-2xl transition-all"
+        >
+          ← Вернуться назад
+        </button>
+
+        <!-- Icon buttons row -->
+        <div class="flex gap-2 pt-1">
+          <button
+            class="glass w-11 h-11 rounded-2xl flex items-center justify-center text-white/40 hover:text-white/70 hover:border-white/12 active:scale-[0.95] transition-all"
+          >
+            <svg
+              class="w-[18px] h-[18px]"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.5"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5"
+              />
+            </svg>
+          </button>
+          <button
+            class="glass w-11 h-11 rounded-2xl flex items-center justify-center text-white/40 hover:text-white/70 hover:border-white/12 active:scale-[0.95] transition-all"
+          >
+            <svg
+              class="w-[18px] h-[18px]"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.5"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0"
+              />
+            </svg>
+          </button>
+          <button
+            class="glass w-11 h-11 rounded-2xl flex items-center justify-center text-white/40 hover:text-white/70 hover:border-white/12 active:scale-[0.95] transition-all"
+          >
+            <svg
+              class="w-[18px] h-[18px]"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.5"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                d="M11.25 11.25l.041-.02a.75.75 0 011.063.852l-.708 2.836a.75.75 0 001.063.853l.041-.021M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-9-3.75h.008v.008H12V8.25z"
+              />
+            </svg>
+          </button>
+        </div>
+      </section>
+
+      <!-- ────────────────────────────────────── -->
+      <!-- MODULE 03: SCENARIO A/B/C             -->
+      <!-- ────────────────────────────────────── -->
+      <section class="space-y-4">
+        <p
+          class="font-mono text-[9px] font-bold uppercase tracking-[0.2em] text-white/20 pb-3 border-b border-white/[0.06]"
+        >
+          03 — Сценарий теста
+        </p>
+
+        <div class="glass rounded-3xl p-6 space-y-5">
+          <!-- Meta -->
+          <div class="flex items-center justify-between">
+            <span
+              class="font-mono text-[9px] font-bold uppercase tracking-[0.18em] text-holo/70"
+              >Сценарий 7 / 27</span
+            >
+            <div class="flex items-center gap-2">
+              <div
+                class="w-2 h-2 rounded-full bg-ch-3"
+                style="box-shadow: 0 0 6px rgba(234, 179, 8, 0.5)"
+              ></div>
+              <span
+                class="font-mono text-[9px] font-bold uppercase tracking-[0.15em] text-white/20"
+                >Живот</span
+              >
+            </div>
+          </div>
+
+          <!-- Question -->
+          <p
+            class="text-[15px] font-light text-white/80 tracking-[-0.03em] leading-[1.7]"
+          >
+            Коллега публично присвоил вашу идею на совещании. Все кивают,
+            начальник доволен. Ваша первая реакция?
+          </p>
+
+          <!-- Options -->
+          <div class="space-y-2">
+            <!-- А — default -->
+            <button
+              class="w-full text-left p-4 rounded-2xl bg-white/[0.03] border border-transparent hover:border-white/[0.08] hover:bg-white/[0.05] transition-all flex items-start gap-3.5 group active:scale-[0.99]"
+            >
+              <span
+                class="w-7 h-7 rounded-xl bg-white/[0.04] border border-white/[0.08] font-mono text-[10px] font-bold flex items-center justify-center text-white/25 group-hover:text-white/50 flex-shrink-0 transition-colors mt-0.5"
+                >А</span
+              >
+              <span
+                class="text-[13px] font-light text-white/40 group-hover:text-white/60 tracking-[-0.03em] leading-[1.6] transition-colors"
+                >Молчу. Внутри — жгучий стыд и бессилие. Прокручиваю ситуацию
+                часами, но ничего не говорю.</span
+              >
+            </button>
+
+            <!-- Б — SELECTED -->
+            <button
+              class="w-full text-left p-4 rounded-2xl bg-holo/[0.06] border border-holo/30 flex items-start gap-3.5"
+              style="
+                box-shadow:
+                  inset 0 0 20px rgba(123, 97, 255, 0.08),
+                  0 0 12px rgba(123, 97, 255, 0.06);
+              "
+            >
+              <span
+                class="w-7 h-7 rounded-xl bg-holo font-mono text-[10px] font-bold flex items-center justify-center text-white flex-shrink-0 mt-0.5"
+                style="box-shadow: 0 0 14px rgba(123, 97, 255, 0.45)"
+                >Б</span
+              >
+              <span
+                class="text-[13px] font-medium text-white/80 tracking-[-0.03em] leading-[1.6]"
+                >Спокойно говорю: «Эту идею предложил я — рад, что всем
+                понравилась».</span
+              >
+            </button>
+
+            <!-- В — default -->
+            <button
+              class="w-full text-left p-4 rounded-2xl bg-white/[0.03] border border-transparent hover:border-white/[0.08] hover:bg-white/[0.05] transition-all flex items-start gap-3.5 group active:scale-[0.99]"
+            >
+              <span
+                class="w-7 h-7 rounded-xl bg-white/[0.04] border border-white/[0.08] font-mono text-[10px] font-bold flex items-center justify-center text-white/25 group-hover:text-white/50 flex-shrink-0 transition-colors mt-0.5"
+                >В</span
+              >
+              <span
+                class="text-[13px] font-light text-white/40 group-hover:text-white/60 tracking-[-0.03em] leading-[1.6] transition-colors"
+                >Вспыхиваю: «Это МОЯ идея! Ты её украл!» Голос дрожит, лицо
+                горит.</span
+              >
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <!-- ────────────────────────────────────── -->
+      <!-- MODULE 04: PALETTE + CIRCLES          -->
+      <!-- ────────────────────────────────────── -->
+      <section class="space-y-6">
+        <p
+          class="font-mono text-[9px] font-bold uppercase tracking-[0.2em] text-white/20 pb-3 border-b border-white/[0.06]"
+        >
+          04 — Палитра центров & Круги
+        </p>
+
+        <!-- 9 circles grid -->
+        <div class="grid grid-cols-3 gap-4">
+          <!-- 1. Исток — 39% fill -->
+          <div class="flex flex-col items-center gap-3">
+            <div class="ch-circle w-16 h-16">
+              <div class="ch-ring" style="border-color: #ef4444"></div>
+              <div
+                class="ch-fill"
+                style="
+                  width: 25px;
+                  height: 25px;
+                  background: #ef4444;
+                  box-shadow: 0 0 12px rgba(239, 68, 68, 0.4);
+                "
+              ></div>
+            </div>
+            <div class="text-center">
+              <div
+                class="font-semibold text-[13px] tracking-[-0.03em] text-white/80"
+              >
+                Исток
+              </div>
+              <div
+                class="font-mono text-[9px] font-bold text-white/20 tracking-[0.1em] uppercase mt-0.5"
+              >
+                2 / 18
+              </div>
+            </div>
+          </div>
+
+          <!-- 2. Зарод — 17% fill -->
+          <div class="flex flex-col items-center gap-3">
+            <div class="ch-circle w-16 h-16">
+              <div class="ch-ring" style="border-color: #f97316"></div>
+              <div
+                class="ch-fill"
+                style="
+                  width: 11px;
+                  height: 11px;
+                  background: #f97316;
+                  box-shadow: 0 0 10px rgba(249, 115, 22, 0.4);
+                "
+              ></div>
+            </div>
+            <div class="text-center">
+              <div
+                class="font-semibold text-[13px] tracking-[-0.03em] text-white/80"
+              >
+                Зарод
+              </div>
+              <div
+                class="font-mono text-[9px] font-bold text-white/20 tracking-[0.1em] uppercase mt-0.5"
+              >
+                3 / 18
+              </div>
+            </div>
+          </div>
+
+          <!-- 3. Живот — 22% fill -->
+          <div class="flex flex-col items-center gap-3">
+            <div class="ch-circle w-16 h-16">
+              <div class="ch-ring" style="border-color: #eab308"></div>
+              <div
+                class="ch-fill"
+                style="
+                  width: 14px;
+                  height: 14px;
+                  background: #eab308;
+                  box-shadow: 0 0 10px rgba(234, 179, 8, 0.4);
+                "
+              ></div>
+            </div>
+            <div class="text-center">
+              <div
+                class="font-semibold text-[13px] tracking-[-0.03em] text-white/80"
+              >
+                Живот
+              </div>
+              <div
+                class="font-mono text-[9px] font-bold text-white/20 tracking-[0.1em] uppercase mt-0.5"
+              >
+                4 / 18
+              </div>
+            </div>
+          </div>
+
+          <!-- 4. Перси — 17% fill -->
+          <div class="flex flex-col items-center gap-3">
+            <div class="ch-circle w-16 h-16">
+              <div class="ch-ring" style="border-color: #22c55e"></div>
+              <div
+                class="ch-fill"
+                style="
+                  width: 11px;
+                  height: 11px;
+                  background: #22c55e;
+                  box-shadow: 0 0 10px rgba(34, 197, 94, 0.4);
+                "
+              ></div>
+            </div>
+            <div class="text-center">
+              <div
+                class="font-semibold text-[13px] tracking-[-0.03em] text-white/80"
+              >
+                Перси
+              </div>
+              <div
+                class="font-mono text-[9px] font-bold text-white/20 tracking-[0.1em] uppercase mt-0.5"
+              >
+                3 / 18
+              </div>
+            </div>
+          </div>
+
+          <!-- 5. Лада — 6% fill -->
+          <div class="flex flex-col items-center gap-3">
+            <div class="ch-circle w-16 h-16">
+              <div class="ch-ring" style="border-color: #ec4899"></div>
+              <div
+                class="ch-fill"
+                style="
+                  width: 4px;
+                  height: 4px;
+                  background: #ec4899;
+                  box-shadow: 0 0 8px rgba(236, 72, 153, 0.5);
+                "
+              ></div>
+            </div>
+            <div class="text-center">
+              <div
+                class="font-semibold text-[13px] tracking-[-0.03em] text-white/80"
+              >
+                Лада
+              </div>
+              <div
+                class="font-mono text-[9px] font-bold text-white/20 tracking-[0.1em] uppercase mt-0.5"
+              >
+                1 / 18
+              </div>
+            </div>
+          </div>
+
+          <!-- 6. Леля — 17% fill -->
+          <div class="flex flex-col items-center gap-3">
+            <div class="ch-circle w-16 h-16">
+              <div class="ch-ring" style="border-color: #a855f7"></div>
+              <div
+                class="ch-fill"
+                style="
+                  width: 11px;
+                  height: 11px;
+                  background: #a855f7;
+                  box-shadow: 0 0 10px rgba(168, 85, 247, 0.4);
+                "
+              ></div>
+            </div>
+            <div class="text-center">
+              <div
+                class="font-semibold text-[13px] tracking-[-0.03em] text-white/80"
+              >
+                Леля
+              </div>
+              <div
+                class="font-mono text-[9px] font-bold text-white/20 tracking-[0.1em] uppercase mt-0.5"
+              >
+                3 / 18
+              </div>
+            </div>
+          </div>
+
+          <!-- 7. Уста — 39% fill (ГОЛУБОЙ) -->
+          <div class="flex flex-col items-center gap-3">
+            <div class="ch-circle w-16 h-16">
+              <div class="ch-ring" style="border-color: #38bdf8"></div>
+              <div
+                class="ch-fill"
+                style="
+                  width: 25px;
+                  height: 25px;
+                  background: #38bdf8;
+                  box-shadow: 0 0 14px rgba(56, 189, 248, 0.45);
+                "
+              ></div>
+            </div>
+            <div class="text-center">
+              <div
+                class="font-semibold text-[13px] tracking-[-0.03em] text-white/80"
+              >
+                Уста
+              </div>
+              <div
+                class="font-mono text-[9px] font-bold text-ch-7 tracking-[0.1em] uppercase mt-0.5"
+              >
+                7 / 18
+              </div>
+            </div>
+          </div>
+
+          <!-- 8. Чело — 39% fill (СИНИЙ) -->
+          <div class="flex flex-col items-center gap-3">
+            <div class="ch-circle w-16 h-16">
+              <div class="ch-ring" style="border-color: #2563eb"></div>
+              <div
+                class="ch-fill"
+                style="
+                  width: 25px;
+                  height: 25px;
+                  background: #2563eb;
+                  box-shadow: 0 0 14px rgba(37, 99, 235, 0.45);
+                "
+              ></div>
+            </div>
+            <div class="text-center">
+              <div
+                class="font-semibold text-[13px] tracking-[-0.03em] text-white/80"
+              >
+                Чело
+              </div>
+              <div
+                class="font-mono text-[9px] font-bold text-ch-8 tracking-[0.1em] uppercase mt-0.5"
+              >
+                7 / 18
+              </div>
+            </div>
+          </div>
+
+          <!-- 9. Родник — 11% fill (ФИОЛЕТОВЫЙ) -->
+          <div class="flex flex-col items-center gap-3">
+            <div class="ch-circle w-16 h-16">
+              <div class="ch-ring" style="border-color: #8b5cf6"></div>
+              <div
+                class="ch-fill"
+                style="
+                  width: 7px;
+                  height: 7px;
+                  background: #8b5cf6;
+                  box-shadow: 0 0 8px rgba(139, 92, 246, 0.4);
+                "
+              ></div>
+            </div>
+            <div class="text-center">
+              <div
+                class="font-semibold text-[13px] tracking-[-0.03em] text-white/80"
+              >
+                Родник
+              </div>
+              <div
+                class="font-mono text-[9px] font-bold text-white/20 tracking-[0.1em] uppercase mt-0.5"
+              >
+                2 / 18
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Contrast check: Леля vs Родник -->
+        <div class="glass rounded-2xl p-4 flex items-center justify-between">
+          <div class="flex items-center gap-4">
+            <div class="flex items-center gap-2">
+              <div
+                class="w-3 h-3 rounded-full bg-ch-6"
+                style="box-shadow: 0 0 8px rgba(168, 85, 247, 0.5)"
+              ></div>
+              <span class="text-[11px] font-light text-white/40">Леля</span>
+            </div>
+            <div class="flex items-center gap-2">
+              <div
+                class="w-3 h-3 rounded-full bg-ch-9"
+                style="box-shadow: 0 0 8px rgba(139, 92, 246, 0.5)"
+              ></div>
+              <span class="text-[11px] font-light text-white/40">Родник</span>
+            </div>
+          </div>
+          <span
+            class="font-mono text-[9px] font-bold text-white/15 tracking-widest uppercase"
+            >Различимы ✓</span
+          >
+        </div>
+
+        <!-- Display number contrast demo -->
+        <div class="glass holo-shimmer rounded-3xl p-6 text-center">
+          <p
+            class="font-mono text-[9px] font-bold uppercase tracking-[0.18em] text-holo/50 mb-4"
+          >
+            Контраст весов типографики
+          </p>
+          <div class="flex items-baseline justify-center gap-1">
+            <span
+              class="text-[64px] font-extralight tracking-[-0.04em] leading-none text-white/80"
+              >74</span
+            >
+            <span class="text-[24px] font-extralight text-white/20">%</span>
+          </div>
+          <p class="text-[13px] font-bold tracking-[-0.02em] text-white mt-2">
+            Общий баланс системы
+          </p>
+          <p class="text-[12px] font-light text-white/30 mt-1">
+            ExtraLight 200 + Bold 700 в одном блоке
+          </p>
+        </div>
+      </section>
+
+      <!-- ────────────────────────────────────── -->
+      <!-- MODULE 05: TEST QUESTION (Scale 0-3)  -->
+      <!-- ────────────────────────────────────── -->
+      <section class="space-y-4">
+        <p
+          class="font-mono text-[9px] font-bold uppercase tracking-[0.2em] text-white/20 pb-3 border-b border-white/[0.06]"
+        >
+          05 — Вопрос теста (шкала)
+        </p>
+
+        <div class="glass rounded-3xl p-6 space-y-5">
+          <!-- Meta -->
+          <div class="flex items-center justify-between">
+            <span
+              class="font-mono text-[9px] font-bold uppercase tracking-[0.18em] text-holo/70"
+              >Вопрос 18 / 70</span
+            >
+            <div class="flex items-center gap-2">
+              <div
+                class="w-2 h-2 rounded-full bg-ch-1"
+                style="box-shadow: 0 0 6px rgba(239, 68, 68, 0.5)"
+              ></div>
+              <span
+                class="font-mono text-[9px] font-bold uppercase tracking-[0.15em] text-white/20"
+                >Исток</span
+              >
+            </div>
+          </div>
+
+          <!-- Question -->
+          <p
+            class="text-[15px] font-light text-white/80 tracking-[-0.03em] leading-[1.7]"
+          >
+            Мне трудно почувствовать себя в безопасности, даже дома, даже когда
+            рядом близкие. В теле это отзывается тяжестью внизу живота.
+          </p>
+
+          <!-- Scale 0-3 -->
+          <div class="grid grid-cols-4 gap-2 pt-1">
+            <!-- 0 -->
+            <button
+              class="group py-4 rounded-2xl bg-white/[0.03] border border-transparent hover:border-white/[0.08] hover:bg-white/[0.05] transition-all text-center active:scale-[0.95]"
+            >
+              <div
+                class="font-sora font-extralight text-[24px] text-white/40 group-hover:text-white/70 transition-colors leading-none"
+              >
+                0
+              </div>
+              <div
+                class="font-mono text-[8px] font-bold text-white/15 group-hover:text-white/30 uppercase tracking-[0.15em] mt-2 transition-colors"
+              >
+                Никогда
+              </div>
+            </button>
+
+            <!-- 1 -->
+            <button
+              class="group py-4 rounded-2xl bg-white/[0.03] border border-transparent hover:border-white/[0.08] hover:bg-white/[0.05] transition-all text-center active:scale-[0.95]"
+            >
+              <div
+                class="font-sora font-extralight text-[24px] text-white/40 group-hover:text-white/70 transition-colors leading-none"
+              >
+                1
+              </div>
+              <div
+                class="font-mono text-[8px] font-bold text-white/15 group-hover:text-white/30 uppercase tracking-[0.15em] mt-2 transition-colors"
+              >
+                Иногда
+              </div>
+            </button>
+
+            <!-- 2 — SELECTED -->
+            <button
+              class="py-4 rounded-2xl bg-holo/[0.08] border border-holo/40 text-center"
+              style="
+                box-shadow:
+                  inset 0 0 18px rgba(123, 97, 255, 0.1),
+                  0 0 12px rgba(123, 97, 255, 0.08);
+              "
+            >
+              <div
+                class="font-sora font-extralight text-[24px] text-white leading-none"
+              >
+                2
+              </div>
+              <div
+                class="font-mono text-[8px] font-bold text-holo uppercase tracking-[0.15em] mt-2"
+              >
+                Часто
+              </div>
+            </button>
+
+            <!-- 3 -->
+            <button
+              class="group py-4 rounded-2xl bg-white/[0.03] border border-transparent hover:border-white/[0.08] hover:bg-white/[0.05] transition-all text-center active:scale-[0.95]"
+            >
+              <div
+                class="font-sora font-extralight text-[24px] text-white/40 group-hover:text-white/70 transition-colors leading-none"
+              >
+                3
+              </div>
+              <div
+                class="font-mono text-[8px] font-bold text-white/15 group-hover:text-white/30 uppercase tracking-[0.15em] mt-2 transition-colors"
+              >
+                Всегда
+              </div>
+            </button>
+          </div>
+        </div>
+
+        <!-- Nav under question -->
+        <div class="flex items-center justify-between px-2">
+          <button
+            class="text-[13px] font-medium text-white/40 hover:text-white/70 transition-colors flex items-center gap-1.5"
+          >
+            <svg
+              class="w-3.5 h-3.5"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.5"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18"
+              />
+            </svg>
+            Назад
+          </button>
+          <button
+            class="btn-holo px-5 py-2.5 rounded-2xl font-semibold text-[13px] tracking-[-0.02em] flex items-center gap-2"
+          >
+            Далее
+            <svg
+              class="w-3.5 h-3.5 opacity-70"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.5"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3"
+              />
+            </svg>
+          </button>
+        </div>
+      </section>
+
+      <!-- ────────────────────────────────────── -->
+      <!-- MODULE 06: PROGRESS BAR (3 worlds)    -->
+      <!-- ────────────────────────────────────── -->
+      <section class="space-y-4">
+        <p
+          class="font-mono text-[9px] font-bold uppercase tracking-[0.2em] text-white/20 pb-3 border-b border-white/[0.06]"
+        >
+          06 — Прогресс теста
+        </p>
+
+        <div class="glass rounded-3xl p-5 space-y-4">
+          <!-- Labels row -->
+          <div class="flex items-center justify-between">
+            <div class="flex gap-5">
+              <span
+                class="font-mono text-[9px] font-bold uppercase tracking-[0.15em] text-white/60"
+                >Славь</span
+              >
+              <span
+                class="font-mono text-[9px] font-bold uppercase tracking-[0.15em] text-holo"
+                >Явь</span
+              >
+              <span
+                class="font-mono text-[9px] font-bold uppercase tracking-[0.15em] text-white/20"
+                >Навь</span
+              >
+            </div>
+            <span
+              class="font-mono text-[10px] font-bold text-white/40 tracking-widest"
+              >32 / 70</span
+            >
+          </div>
+
+          <!-- Progress track -->
+          <div
+            class="relative h-[3px] bg-white/[0.04] rounded-full overflow-hidden"
+          >
+            <div
+              class="absolute inset-y-0 left-0 rounded-full transition-all duration-700"
+              style="
+                width: 46%;
+                background: linear-gradient(
+                  90deg,
+                  #7b61ff 0%,
+                  #38bdf8 60%,
+                  #8b5cf6 100%
+                );
+                box-shadow: 0 0 12px rgba(123, 97, 255, 0.35);
+              "
+            ></div>
+          </div>
+
+          <!-- Segment ticks (3 worlds) -->
+          <div class="relative h-1 -mt-2">
+            <div class="absolute top-0 left-0 w-px h-2 bg-white/10"></div>
+            <div class="absolute top-0 left-1/3 w-px h-2 bg-white/10"></div>
+            <div class="absolute top-0 left-2/3 w-px h-2 bg-white/10"></div>
+            <div class="absolute top-0 right-0 w-px h-2 bg-white/10"></div>
+          </div>
+
+          <!-- Current section -->
+          <div class="flex items-center justify-between pt-1">
+            <div class="flex items-center gap-2">
+              <div
+                class="w-1.5 h-1.5 rounded-full bg-holo"
+                style="box-shadow: 0 0 6px rgba(123, 97, 255, 0.6)"
+              ></div>
+              <span
+                class="text-[11px] font-light text-white/50 tracking-[-0.02em]"
+                >Сейчас — Явь · сердечные центры</span
+              >
+            </div>
+            <span
+              class="font-mono text-[9px] font-bold text-white/20 uppercase tracking-widest"
+              >~ 12 мин</span
+            >
+          </div>
+        </div>
+      </section>
+
+      <!-- ────────────────────────────────────── -->
+      <!-- MODULE 07: RESULT TABS                -->
+      <!-- ────────────────────────────────────── -->
+      <section class="space-y-4">
+        <p
+          class="font-mono text-[9px] font-bold uppercase tracking-[0.2em] text-white/20 pb-3 border-b border-white/[0.06]"
+        >
+          07 — Табы результата
+        </p>
+
+        <!-- Floating segmented control -->
+        <div class="glass-solid p-1.5 rounded-2xl flex gap-1">
+          <button
+            class="flex-1 py-2.5 rounded-xl bg-holo text-white font-semibold text-[11px] tracking-[-0.02em] transition-all"
+            style="box-shadow: 0 0 16px rgba(123, 97, 255, 0.35)"
+          >
+            Схема
+          </button>
+          <button
+            class="flex-1 py-2.5 rounded-xl text-white/40 hover:text-white/70 hover:bg-white/[0.03] font-medium text-[11px] tracking-[-0.02em] transition-all"
+          >
+            Центры
+          </button>
+          <button
+            class="flex-1 py-2.5 rounded-xl text-white/40 hover:text-white/70 hover:bg-white/[0.03] font-medium text-[11px] tracking-[-0.02em] transition-all"
+          >
+            Ребёнок
+          </button>
+          <button
+            class="flex-1 py-2.5 rounded-xl text-white/40 hover:text-white/70 hover:bg-white/[0.03] font-medium text-[11px] tracking-[-0.02em] transition-all"
+          >
+            Советы
+          </button>
+        </div>
+      </section>
+
+      <!-- ────────────────────────────────────── -->
+      <!-- MODULE 08: CENTERS SCHEMA (main viz)  -->
+      <!-- ────────────────────────────────────── -->
+      <section class="space-y-4">
+        <p
+          class="font-mono text-[9px] font-bold uppercase tracking-[0.2em] text-white/20 pb-3 border-b border-white/[0.06]"
+        >
+          08 — Схема центров (главный визуал)
+        </p>
+
+        <div class="glass holo-shimmer rounded-3xl p-6 space-y-6">
+          <!-- Overall header -->
+          <div class="text-center pb-2 border-b border-white/[0.05]">
+            <p
+              class="font-mono text-[9px] font-bold uppercase tracking-[0.18em] text-holo/60 mb-2"
+            >
+              Общий баланс системы
+            </p>
+            <div class="flex items-baseline justify-center gap-1">
+              <span
+                class="text-[56px] font-extralight tracking-[-0.04em] leading-none text-white/85"
+                >78</span
+              >
+              <span class="text-[20px] font-extralight text-white/25">%</span>
+            </div>
+          </div>
+
+          <!-- ═══ WORLD: СЛАВЬ (top) ═══ -->
+          <div class="space-y-4">
+            <div class="flex items-center justify-between">
+              <div class="flex items-center gap-2">
+                <span class="w-4 h-px bg-white/20"></span>
+                <span
+                  class="font-mono text-[9px] font-bold uppercase tracking-[0.2em] text-white/60"
+                  >Славь</span
+                >
+              </div>
+              <span class="font-mono text-[10px] font-bold text-white/40"
+                >61%</span
+              >
+            </div>
+
+            <!-- Center row: Родник 89% -->
+            <div class="flex items-center gap-4">
+              <div class="ch-circle w-10 h-10 flex-shrink-0">
+                <div class="ch-ring" style="border-color: #8b5cf6"></div>
+                <div
+                  class="ch-fill"
+                  style="
+                    width: 36px;
+                    height: 36px;
+                    background: #8b5cf6;
+                    box-shadow: 0 0 12px rgba(139, 92, 246, 0.45);
+                  "
+                ></div>
+              </div>
+              <div class="flex-1 flex items-center justify-between gap-3">
+                <div>
+                  <div
+                    class="font-semibold text-[13px] text-white/80 tracking-[-0.02em]"
+                  >
+                    Родник
+                  </div>
+                  <div
+                    class="font-mono text-[9px] font-bold text-white/25 uppercase tracking-[0.1em]"
+                  >
+                    Сахасрара · 2/18
+                  </div>
+                </div>
+                <span class="font-mono text-[11px] font-bold text-white/70"
+                  >89%</span
+                >
+              </div>
+            </div>
+
+            <!-- Center row: Чело 61% -->
+            <div class="flex items-center gap-4">
+              <div class="ch-circle w-10 h-10 flex-shrink-0">
+                <div class="ch-ring" style="border-color: #2563eb"></div>
+                <div
+                  class="ch-fill"
+                  style="
+                    width: 24px;
+                    height: 24px;
+                    background: #2563eb;
+                    box-shadow: 0 0 12px rgba(37, 99, 235, 0.45);
+                  "
+                ></div>
+              </div>
+              <div class="flex-1 flex items-center justify-between gap-3">
+                <div>
+                  <div
+                    class="font-semibold text-[13px] text-white/80 tracking-[-0.02em]"
+                  >
+                    Чело
+                  </div>
+                  <div
+                    class="font-mono text-[9px] font-bold text-white/25 uppercase tracking-[0.1em]"
+                  >
+                    Аджна · 7/18
+                  </div>
+                </div>
+                <span class="font-mono text-[11px] font-bold text-ch-8"
+                  >61%</span
+                >
+              </div>
+            </div>
+
+            <!-- Center row: Уста 33% - критично -->
+            <div class="flex items-center gap-4">
+              <div class="ch-circle w-10 h-10 flex-shrink-0">
+                <div class="ch-ring" style="border-color: #38bdf8"></div>
+                <div
+                  class="ch-fill"
+                  style="
+                    width: 13px;
+                    height: 13px;
+                    background: #38bdf8;
+                    box-shadow: 0 0 10px rgba(56, 189, 248, 0.5);
+                  "
+                ></div>
+              </div>
+              <div class="flex-1 flex items-center justify-between gap-3">
+                <div>
+                  <div
+                    class="font-semibold text-[13px] text-white tracking-[-0.02em] flex items-center gap-1.5"
+                  >
+                    Уста
+                    <span
+                      class="font-mono text-[8px] font-bold uppercase tracking-widest text-st-neg px-1.5 py-0.5 rounded-full bg-st-neg/10 border border-st-neg/20"
+                      >приоритет</span
+                    >
+                  </div>
+                  <div
+                    class="font-mono text-[9px] font-bold text-white/25 uppercase tracking-[0.1em]"
+                  >
+                    Вишуддха · 12/18
+                  </div>
+                </div>
+                <span class="font-mono text-[11px] font-bold text-ch-7"
+                  >33%</span
+                >
+              </div>
+            </div>
+          </div>
+
+          <!-- ═══ WORLD: ЯВЬ (middle) ═══ -->
+          <div class="space-y-4">
+            <div class="flex items-center justify-between">
+              <div class="flex items-center gap-2">
+                <span class="w-4 h-px bg-white/20"></span>
+                <span
+                  class="font-mono text-[9px] font-bold uppercase tracking-[0.2em] text-white/60"
+                  >Явь</span
+                >
+              </div>
+              <span class="font-mono text-[10px] font-bold text-white/40"
+                >85%</span
+              >
+            </div>
+
+            <!-- Леля 78% -->
+            <div class="flex items-center gap-4">
+              <div class="ch-circle w-10 h-10 flex-shrink-0">
+                <div class="ch-ring" style="border-color: #a855f7"></div>
+                <div
+                  class="ch-fill"
+                  style="
+                    width: 31px;
+                    height: 31px;
+                    background: #a855f7;
+                    box-shadow: 0 0 12px rgba(168, 85, 247, 0.45);
+                  "
+                ></div>
+              </div>
+              <div class="flex-1 flex items-center justify-between gap-3">
+                <div>
+                  <div
+                    class="font-semibold text-[13px] text-white/80 tracking-[-0.02em]"
+                  >
+                    Леля
+                  </div>
+                  <div
+                    class="font-mono text-[9px] font-bold text-white/25 uppercase tracking-[0.1em]"
+                  >
+                    4/18
+                  </div>
+                </div>
+                <span class="font-mono text-[11px] font-bold text-white/70"
+                  >78%</span
+                >
+              </div>
+            </div>
+
+            <!-- Перси 83% -->
+            <div class="flex items-center gap-4">
+              <div class="ch-circle w-10 h-10 flex-shrink-0">
+                <div class="ch-ring" style="border-color: #22c55e"></div>
+                <div
+                  class="ch-fill"
+                  style="
+                    width: 33px;
+                    height: 33px;
+                    background: #22c55e;
+                    box-shadow: 0 0 12px rgba(34, 197, 94, 0.45);
+                  "
+                ></div>
+              </div>
+              <div class="flex-1 flex items-center justify-between gap-3">
+                <div>
+                  <div
+                    class="font-semibold text-[13px] text-white/80 tracking-[-0.02em]"
+                  >
+                    Перси
+                  </div>
+                  <div
+                    class="font-mono text-[9px] font-bold text-white/25 uppercase tracking-[0.1em]"
+                  >
+                    3/18
+                  </div>
+                </div>
+                <span class="font-mono text-[11px] font-bold text-white/70"
+                  >83%</span
+                >
+              </div>
+            </div>
+
+            <!-- Лада 94% -->
+            <div class="flex items-center gap-4">
+              <div class="ch-circle w-10 h-10 flex-shrink-0">
+                <div class="ch-ring" style="border-color: #ec4899"></div>
+                <div
+                  class="ch-fill"
+                  style="
+                    width: 38px;
+                    height: 38px;
+                    background: #ec4899;
+                    box-shadow: 0 0 12px rgba(236, 72, 153, 0.45);
+                  "
+                ></div>
+              </div>
+              <div class="flex-1 flex items-center justify-between gap-3">
+                <div>
+                  <div
+                    class="font-semibold text-[13px] text-white/80 tracking-[-0.02em]"
+                  >
+                    Лада
+                  </div>
+                  <div
+                    class="font-mono text-[9px] font-bold text-white/25 uppercase tracking-[0.1em]"
+                  >
+                    1/18
+                  </div>
+                </div>
+                <span class="font-mono text-[11px] font-bold text-white/70"
+                  >94%</span
+                >
+              </div>
+            </div>
+          </div>
+
+          <!-- ═══ WORLD: НАВЬ (bottom) ═══ -->
+          <div class="space-y-4">
+            <div class="flex items-center justify-between">
+              <div class="flex items-center gap-2">
+                <span class="w-4 h-px bg-white/20"></span>
+                <span
+                  class="font-mono text-[9px] font-bold uppercase tracking-[0.2em] text-white/60"
+                  >Навь</span
+                >
+              </div>
+              <span class="font-mono text-[10px] font-bold text-white/40"
+                >83%</span
+              >
+            </div>
+
+            <!-- Живот 78% -->
+            <div class="flex items-center gap-4">
+              <div class="ch-circle w-10 h-10 flex-shrink-0">
+                <div class="ch-ring" style="border-color: #eab308"></div>
+                <div
+                  class="ch-fill"
+                  style="
+                    width: 31px;
+                    height: 31px;
+                    background: #eab308;
+                    box-shadow: 0 0 12px rgba(234, 179, 8, 0.45);
+                  "
+                ></div>
+              </div>
+              <div class="flex-1 flex items-center justify-between gap-3">
+                <div>
+                  <div
+                    class="font-semibold text-[13px] text-white/80 tracking-[-0.02em]"
+                  >
+                    Живот
+                  </div>
+                  <div
+                    class="font-mono text-[9px] font-bold text-white/25 uppercase tracking-[0.1em]"
+                  >
+                    Манипура · 4/18
+                  </div>
+                </div>
+                <span class="font-mono text-[11px] font-bold text-white/70"
+                  >78%</span
+                >
+              </div>
+            </div>
+
+            <!-- Зарод 83% -->
+            <div class="flex items-center gap-4">
+              <div class="ch-circle w-10 h-10 flex-shrink-0">
+                <div class="ch-ring" style="border-color: #f97316"></div>
+                <div
+                  class="ch-fill"
+                  style="
+                    width: 33px;
+                    height: 33px;
+                    background: #f97316;
+                    box-shadow: 0 0 12px rgba(249, 115, 22, 0.45);
+                  "
+                ></div>
+              </div>
+              <div class="flex-1 flex items-center justify-between gap-3">
+                <div>
+                  <div
+                    class="font-semibold text-[13px] text-white/80 tracking-[-0.02em]"
+                  >
+                    Зарод
+                  </div>
+                  <div
+                    class="font-mono text-[9px] font-bold text-white/25 uppercase tracking-[0.1em]"
+                  >
+                    Свадхистхана · 3/18
+                  </div>
+                </div>
+                <span class="font-mono text-[11px] font-bold text-white/70"
+                  >83%</span
+                >
+              </div>
+            </div>
+
+            <!-- Исток 89% -->
+            <div class="flex items-center gap-4">
+              <div class="ch-circle w-10 h-10 flex-shrink-0">
+                <div class="ch-ring" style="border-color: #ef4444"></div>
+                <div
+                  class="ch-fill"
+                  style="
+                    width: 36px;
+                    height: 36px;
+                    background: #ef4444;
+                    box-shadow: 0 0 12px rgba(239, 68, 68, 0.45);
+                  "
+                ></div>
+              </div>
+              <div class="flex-1 flex items-center justify-between gap-3">
+                <div>
+                  <div
+                    class="font-semibold text-[13px] text-white/80 tracking-[-0.02em]"
+                  >
+                    Исток
+                  </div>
+                  <div
+                    class="font-mono text-[9px] font-bold text-white/25 uppercase tracking-[0.1em]"
+                  >
+                    Муладхара · 2/18
+                  </div>
+                </div>
+                <span class="font-mono text-[11px] font-bold text-white/70"
+                  >89%</span
+                >
+              </div>
+            </div>
+          </div>
+
+          <!-- ═══ PERIPHERY ═══ -->
+          <div class="space-y-3 pt-2 border-t border-white/[0.05]">
+            <div class="flex items-center gap-2">
+              <span class="w-4 h-px bg-white/10"></span>
+              <span
+                class="font-mono text-[9px] font-bold uppercase tracking-[0.2em] text-white/30"
+                >Периферия</span
+              >
+            </div>
+
+            <div class="grid grid-cols-4 gap-3">
+              <!-- Стопы -->
+              <div class="flex flex-col items-center gap-1.5">
+                <div class="ch-circle w-8 h-8">
+                  <div
+                    class="ch-ring"
+                    style="border-color: #ef4444; opacity: 0.35"
+                  ></div>
+                  <div
+                    class="ch-fill"
+                    style="
+                      width: 27px;
+                      height: 27px;
+                      background: #ef4444;
+                      opacity: 0.85;
+                      box-shadow: 0 0 8px rgba(239, 68, 68, 0.35);
+                    "
+                  ></div>
+                </div>
+                <div class="text-center">
+                  <div
+                    class="font-mono text-[8px] font-bold text-white/50 uppercase tracking-[0.1em]"
+                  >
+                    Стопы
+                  </div>
+                  <div class="font-mono text-[8px] font-bold text-white/25">
+                    83%
+                  </div>
+                </div>
+              </div>
+
+              <!-- Колени -->
+              <div class="flex flex-col items-center gap-1.5">
+                <div class="ch-circle w-8 h-8">
+                  <div
+                    class="ch-ring"
+                    style="border-color: #ef4444; opacity: 0.35"
+                  ></div>
+                  <div
+                    class="ch-fill"
+                    style="
+                      width: 24px;
+                      height: 24px;
+                      background: #ef4444;
+                      opacity: 0.85;
+                      box-shadow: 0 0 8px rgba(239, 68, 68, 0.35);
+                    "
+                  ></div>
+                </div>
+                <div class="text-center">
+                  <div
+                    class="font-mono text-[8px] font-bold text-white/50 uppercase tracking-[0.1em]"
+                  >
+                    Колени
+                  </div>
+                  <div class="font-mono text-[8px] font-bold text-white/25">
+                    75%
+                  </div>
+                </div>
+              </div>
+
+              <!-- Локти -->
+              <div class="flex flex-col items-center gap-1.5">
+                <div class="ch-circle w-8 h-8">
+                  <div
+                    class="ch-ring"
+                    style="border-color: #ec4899; opacity: 0.35"
+                  ></div>
+                  <div
+                    class="ch-fill"
+                    style="
+                      width: 32px;
+                      height: 32px;
+                      background: #ec4899;
+                      opacity: 0.85;
+                      box-shadow: 0 0 8px rgba(236, 72, 153, 0.35);
+                    "
+                  ></div>
+                </div>
+                <div class="text-center">
+                  <div
+                    class="font-mono text-[8px] font-bold text-white/50 uppercase tracking-[0.1em]"
+                  >
+                    Локти
+                  </div>
+                  <div class="font-mono text-[8px] font-bold text-white/25">
+                    100%
+                  </div>
+                </div>
+              </div>
+
+              <!-- Ладони -->
+              <div class="flex flex-col items-center gap-1.5">
+                <div class="ch-circle w-8 h-8">
+                  <div
+                    class="ch-ring"
+                    style="border-color: #ec4899; opacity: 0.35"
+                  ></div>
+                  <div
+                    class="ch-fill"
+                    style="
+                      width: 20px;
+                      height: 20px;
+                      background: #ec4899;
+                      opacity: 0.85;
+                      box-shadow: 0 0 8px rgba(236, 72, 153, 0.35);
+                    "
+                  ></div>
+                </div>
+                <div class="text-center">
+                  <div
+                    class="font-mono text-[8px] font-bold text-white/50 uppercase tracking-[0.1em]"
+                  >
+                    Ладони
+                  </div>
+                  <div class="font-mono text-[8px] font-bold text-white/25">
+                    62%
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Legend / hint -->
+          <div
+            class="pt-3 border-t border-white/[0.05] flex items-center justify-center gap-4"
+          >
+            <div class="flex items-center gap-1.5">
+              <div class="w-2.5 h-2.5 rounded-full bg-white/20"></div>
+              <span
+                class="font-mono text-[8px] font-bold uppercase tracking-widest text-white/25"
+                >Пусто</span
+              >
+            </div>
+            <span class="w-6 h-px bg-white/10"></span>
+            <div class="flex items-center gap-1.5">
+              <div class="w-2.5 h-2.5 rounded-full bg-white/60"></div>
+              <span
+                class="font-mono text-[8px] font-bold uppercase tracking-widest text-white/40"
+                >Заполнено</span
+              >
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ────────────────────────────────────── -->
+      <!-- MODULE 09: CENTER CARD                -->
+      <!-- ────────────────────────────────────── -->
+      <section class="space-y-4">
+        <p
+          class="font-mono text-[9px] font-bold uppercase tracking-[0.2em] text-white/20 pb-3 border-b border-white/[0.06]"
+        >
+          09 — Карточка центра
+        </p>
+
+        <!-- EXPANDED (top priority) -->
+        <div class="glass rounded-3xl p-6 relative overflow-hidden">
+          <!-- Ambient color aura -->
+          <div
+            class="absolute -top-16 -right-16 w-40 h-40 rounded-full pointer-events-none"
+            style="background: rgba(56, 189, 248, 0.1); filter: blur(60px)"
+          ></div>
+
+          <div class="relative">
+            <!-- Head: circle + name + priority tag -->
+            <div class="flex items-start justify-between mb-5">
+              <div class="flex items-center gap-4">
+                <div class="ch-circle w-14 h-14">
+                  <div class="ch-ring" style="border-color: #38bdf8"></div>
+                  <div
+                    class="ch-fill"
+                    style="
+                      width: 18px;
+                      height: 18px;
+                      background: #38bdf8;
+                      box-shadow: 0 0 14px rgba(56, 189, 248, 0.5);
+                    "
+                  ></div>
+                </div>
+                <div>
+                  <h3
+                    class="font-semibold text-[17px] tracking-[-0.02em] text-white"
+                  >
+                    Уста
+                  </h3>
+                  <p
+                    class="font-mono text-[9px] font-bold uppercase tracking-[0.15em] text-ch-7"
+                  >
+                    Вишуддха · Мир Слави
+                  </p>
+                </div>
+              </div>
+              <span
+                class="font-mono text-[8px] font-bold uppercase tracking-widest text-st-neg px-2 py-1 rounded-full bg-st-neg/[0.08] border border-st-neg/20"
+                >приоритет</span
+              >
+            </div>
+
+            <!-- Big % health -->
+            <div class="mb-5">
+              <div class="flex items-baseline gap-1 mb-1">
+                <span
+                  class="text-[48px] font-extralight tracking-[-0.04em] leading-none text-ch-7"
+                  >33</span
+                >
+                <span class="text-[18px] font-extralight text-white/25">%</span>
+                <span
+                  class="ml-auto font-mono text-[10px] font-bold text-white/30 uppercase tracking-widest"
+                  >здоровье</span
+                >
+              </div>
+              <p
+                class="font-mono text-[9px] font-bold uppercase tracking-[0.15em] text-white/25"
+              >
+                12 / 18 баллов дисбаланса
+              </p>
+            </div>
+
+            <!-- Health bar -->
+            <div class="mb-5">
+              <div class="h-[3px] bg-white/[0.04] rounded-full overflow-hidden">
+                <div
+                  class="h-full rounded-full"
+                  style="
+                    width: 33%;
+                    background: #38bdf8;
+                    box-shadow: 0 0 8px rgba(56, 189, 248, 0.5);
+                  "
+                ></div>
+              </div>
+            </div>
+
+            <!-- Description -->
+            <p
+              class="text-[13px] font-light text-white/60 tracking-[-0.03em] leading-[1.7] mb-5"
+            >
+              Кора дерева потрескалась и заблокирована. Вы «заглатываете» слова
+              и не разрешаете себе говорить правду вслух.
+            </p>
+
+            <!-- Meta grid: недобор / перебор -->
+            <div
+              class="grid grid-cols-2 gap-2 pt-4 border-t border-white/[0.05]"
+            >
+              <div
+                class="bg-white/[0.02] border border-white/[0.05] rounded-2xl px-4 py-3"
+              >
+                <div
+                  class="font-mono text-[8px] font-bold text-white/25 uppercase tracking-[0.15em] mb-1"
+                >
+                  Недобор
+                </div>
+                <div class="flex items-baseline gap-1">
+                  <span class="font-mono text-[16px] font-bold text-st-neg"
+                    >10</span
+                  >
+                  <span class="font-mono text-[10px] text-white/25">/ 9</span>
+                </div>
+              </div>
+              <div
+                class="bg-white/[0.02] border border-white/[0.05] rounded-2xl px-4 py-3"
+              >
+                <div
+                  class="font-mono text-[8px] font-bold text-white/25 uppercase tracking-[0.15em] mb-1"
+                >
+                  Перебор
+                </div>
+                <div class="flex items-baseline gap-1">
+                  <span class="font-mono text-[16px] font-bold text-white/70"
+                    >2</span
+                  >
+                  <span class="font-mono text-[10px] text-white/25">/ 9</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- COLLAPSED (balanced) -->
+        <div
+          class="glass rounded-3xl px-5 py-4 flex items-center justify-between hover:border-white/[0.12] transition-all cursor-pointer group"
+        >
+          <div class="flex items-center gap-4">
+            <div class="ch-circle w-10 h-10">
+              <div class="ch-ring" style="border-color: #ef4444"></div>
+              <div
+                class="ch-fill"
+                style="
+                  width: 36px;
+                  height: 36px;
+                  background: #ef4444;
+                  box-shadow: 0 0 10px rgba(239, 68, 68, 0.4);
+                "
+              ></div>
+            </div>
+            <div>
+              <div
+                class="font-semibold text-[14px] text-white/80 tracking-[-0.02em]"
+              >
+                Исток
+              </div>
+              <div
+                class="font-mono text-[9px] font-bold text-white/25 uppercase tracking-[0.1em]"
+              >
+                Муладхара · 2/18
+              </div>
+            </div>
+          </div>
+          <div class="flex items-center gap-3">
+            <span class="font-mono text-[13px] font-bold text-white/70"
+              >89%</span
+            >
+            <svg
+              class="w-4 h-4 text-white/20 group-hover:text-white/50 transition-colors"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.5"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                d="M8.25 4.5l7.5 7.5-7.5 7.5"
+              />
+            </svg>
+          </div>
+        </div>
+
+        <!-- COLLAPSED (mild imbalance) -->
+        <div
+          class="glass rounded-3xl px-5 py-4 flex items-center justify-between hover:border-white/[0.12] transition-all cursor-pointer group"
+        >
+          <div class="flex items-center gap-4">
+            <div class="ch-circle w-10 h-10">
+              <div class="ch-ring" style="border-color: #2563eb"></div>
+              <div
+                class="ch-fill"
+                style="
+                  width: 24px;
+                  height: 24px;
+                  background: #2563eb;
+                  box-shadow: 0 0 10px rgba(37, 99, 235, 0.4);
+                "
+              ></div>
+            </div>
+            <div>
+              <div
+                class="font-semibold text-[14px] text-white/80 tracking-[-0.02em]"
+              >
+                Чело
+              </div>
+              <div
+                class="font-mono text-[9px] font-bold text-white/25 uppercase tracking-[0.1em]"
+              >
+                Аджна · 7/18
+              </div>
+            </div>
+          </div>
+          <div class="flex items-center gap-3">
+            <span class="font-mono text-[13px] font-bold text-ch-8">61%</span>
+            <svg
+              class="w-4 h-4 text-white/20 group-hover:text-white/50 transition-colors"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.5"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                d="M8.25 4.5l7.5 7.5-7.5 7.5"
+              />
+            </svg>
+          </div>
+        </div>
+      </section>
+
+      <!-- ────────────────────────────────────── -->
+      <!-- MODULE 10: INNER CHILD                -->
+      <!-- ────────────────────────────────────── -->
+      <section class="space-y-4">
+        <p
+          class="font-mono text-[9px] font-bold uppercase tracking-[0.2em] text-white/20 pb-3 border-b border-white/[0.06]"
+        >
+          10 — Внутренний ребёнок
+        </p>
+
+        <div
+          class="glass holo-shimmer rounded-3xl p-6 relative overflow-hidden"
+        >
+          <!-- Ambient background aura -->
+          <div
+            class="absolute -bottom-20 -left-20 w-56 h-56 rounded-full pointer-events-none"
+            style="background: rgba(123, 97, 255, 0.08); filter: blur(80px)"
+          ></div>
+
+          <div class="relative space-y-5">
+            <!-- Meta label -->
+            <div class="flex items-center gap-2">
+              <span class="w-4 h-px bg-holo/40"></span>
+              <span
+                class="font-mono text-[9px] font-bold uppercase tracking-[0.2em] text-holo/70"
+                >Твой внутренний ребёнок</span
+              >
+            </div>
+
+            <!-- Illustration placeholder + age -->
+            <div class="flex items-start gap-4">
+              <div
+                class="w-24 h-24 rounded-2xl bg-white/[0.02] border border-white/[0.06] flex items-center justify-center flex-shrink-0 relative overflow-hidden"
+              >
+                <!-- Заглушка для картинки. Замените на <img src="assets/child-boy-5.png" ...> -->
+                <div class="text-4xl opacity-60">👦</div>
+                <div
+                  class="absolute inset-0 pointer-events-none"
+                  style="
+                    background: radial-gradient(
+                      circle at center,
+                      transparent 40%,
+                      rgba(123, 97, 255, 0.08) 100%
+                    );
+                  "
+                ></div>
+              </div>
+
+              <div class="flex-1 pt-1">
+                <div class="mb-2">
+                  <div
+                    class="font-mono text-[9px] font-bold uppercase tracking-[0.15em] text-white/30 mb-1"
+                  >
+                    Возраст
+                  </div>
+                  <div class="flex items-baseline gap-1">
+                    <span
+                      class="text-[32px] font-extralight tracking-[-0.04em] leading-none text-white/85"
+                      >10–15</span
+                    >
+                    <span class="text-[12px] font-extralight text-white/25 ml-1"
+                      >лет</span
+                    >
+                  </div>
+                </div>
+                <p
+                  class="text-[13px] font-light text-white/60 tracking-[-0.02em] leading-[1.5]"
+                >
+                  Подросток, который замолчал
+                </p>
+              </div>
+            </div>
+
+            <!-- Story -->
+            <div class="pt-4 border-t border-white/[0.05]">
+              <p
+                class="text-[13px] font-light text-white/70 tracking-[-0.03em] leading-[1.75]"
+              >
+                Ему когда-то сказали: «Не умничай, твоего мнения никто не
+                спрашивал». Он решил не проявляться, чтобы больше не ранили. С
+                тех пор его горло сжато, а слова — заперты внутри.
+              </p>
+            </div>
+
+            <!-- Softer note -->
+            <div
+              class="flex gap-3 p-4 rounded-2xl bg-white/[0.02] border border-white/[0.05]"
+            >
+              <div class="flex-shrink-0 mt-0.5">
+                <svg
+                  class="w-4 h-4 text-holo/60"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="1.5"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    d="M9.879 7.519c1.171-1.025 3.071-1.025 4.242 0 1.172 1.025 1.172 2.687 0 3.712-.203.179-.43.326-.67.442-.745.361-1.45.999-1.45 1.827v.75M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-9 5.25h.008v.008H12v-.008z"
+                  />
+                </svg>
+              </div>
+              <p
+                class="text-[11px] font-light text-white/40 tracking-[-0.02em] leading-[1.6]"
+              >
+                Это метафора, а не диагноз. Если образ вызывает сильные чувства
+                — это нормально.
+              </p>
+            </div>
+
+            <!-- CTA — fairytale -->
+            <button
+              class="w-full glass rounded-2xl px-4 py-4 flex items-center justify-between hover:border-white/[0.12] active:scale-[0.98] transition-all group"
+            >
+              <div class="flex items-center gap-3">
+                <div
+                  class="w-9 h-9 rounded-xl bg-holo/10 border border-holo/20 flex items-center justify-center flex-shrink-0"
+                >
+                  <svg
+                    class="w-4 h-4 text-holo"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="1.5"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25"
+                    />
+                  </svg>
+                </div>
+                <div class="text-left">
+                  <div
+                    class="font-semibold text-[13px] text-white/80 tracking-[-0.02em]"
+                  >
+                    Сказка для этого ребёнка
+                  </div>
+                  <div
+                    class="font-mono text-[9px] font-bold text-white/30 uppercase tracking-[0.1em]"
+                  >
+                    Полка «Поиск себя» · 11–15 лет
+                  </div>
+                </div>
+              </div>
+              <svg
+                class="w-4 h-4 text-white/20 group-hover:text-white/60 transition-colors flex-shrink-0"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.5"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3"
+                />
+              </svg>
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <!-- ────────────────────────────────────── -->
+      <!-- MODULE 11: PATTERN + RECOMMENDATION   -->
+      <!-- ────────────────────────────────────── -->
+      <section class="space-y-4">
+        <p
+          class="font-mono text-[9px] font-bold uppercase tracking-[0.2em] text-white/20 pb-3 border-b border-white/[0.06]"
+        >
+          11 — Паттерн + Рекомендация
+        </p>
+
+        <!-- Pattern card -->
+        <div class="glass rounded-3xl p-6 space-y-5">
+          <!-- Meta -->
+          <div class="flex items-center gap-2">
+            <span class="w-4 h-px bg-holo/40"></span>
+            <span
+              class="font-mono text-[9px] font-bold uppercase tracking-[0.2em] text-holo/70"
+              >Доминирующий паттерн</span
+            >
+          </div>
+
+          <!-- Title + subtitle -->
+          <div>
+            <h3
+              class="font-bold text-[22px] tracking-[-0.03em] text-white leading-tight mb-2"
+            >
+              «Делаю — значит, существую»
+            </h3>
+            <div class="flex items-center gap-2 flex-wrap">
+              <div
+                class="flex items-center gap-1.5 px-2 py-1 rounded-full bg-ch-7/[0.08] border border-ch-7/25"
+              >
+                <div class="w-1.5 h-1.5 rounded-full bg-ch-7"></div>
+                <span
+                  class="font-mono text-[9px] font-bold text-ch-7 uppercase tracking-[0.1em]"
+                  >Уста · недобор</span
+                >
+              </div>
+              <span class="font-mono text-[10px] text-white/20">×</span>
+              <div
+                class="flex items-center gap-1.5 px-2 py-1 rounded-full bg-ch-3/[0.08] border border-ch-3/25"
+              >
+                <div class="w-1.5 h-1.5 rounded-full bg-ch-3"></div>
+                <span
+                  class="font-mono text-[9px] font-bold text-ch-3 uppercase tracking-[0.1em]"
+                  >Живот · перебор</span
+                >
+              </div>
+            </div>
+          </div>
+
+          <!-- Explanation -->
+          <p
+            class="text-[13px] font-light text-white/60 tracking-[-0.03em] leading-[1.75]"
+          >
+            Ствол дерева гудит от напряжения, но кора не дышит. Вы пашете на
+            износ, но не можете сказать «я устал». Тело кричит через усталость и
+            напряжение, а голос молчит.
+          </p>
+        </div>
+
+        <!-- Recommendation card -->
+        <div class="glass rounded-3xl p-6 space-y-5">
+          <div class="flex items-center gap-2">
+            <span class="w-4 h-px bg-st-pos/40"></span>
+            <span
+              class="font-mono text-[9px] font-bold uppercase tracking-[0.2em] text-st-pos/80"
+              >С чего начать</span
+            >
+          </div>
+
+          <div>
+            <h3
+              class="font-semibold text-[17px] tracking-[-0.02em] text-white/85 mb-2"
+            >
+              Практика «Одна правда в день»
+            </h3>
+            <p
+              class="font-mono text-[9px] font-bold text-white/30 uppercase tracking-[0.15em]"
+            >
+              Для Уст · Высокий ресурс
+            </p>
+          </div>
+
+          <p
+            class="text-[13px] font-light text-white/60 tracking-[-0.03em] leading-[1.75]"
+          >
+            Скажите вслух одну честную вещь, которую обычно глотаете. «Я устал».
+            «Мне не нравится». «Я хочу, чтобы меня обняли». Голос — мышца: чем
+            чаще пользуетесь, тем сильнее.
+          </p>
+
+          <!-- Link to longread -->
+          <a
+            href="#"
+            class="inline-flex items-center gap-1.5 text-holo font-medium text-[13px] hover:bg-holo/[0.05] px-3 py-2 -mx-3 rounded-xl transition-all"
+          >
+            <span>Подробный протокол в лонгриде</span>
+            <svg
+              class="w-3.5 h-3.5"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.5"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3"
+              />
+            </svg>
+          </a>
+        </div>
+      </section>
+
+      <!-- ────────────────────────────────────── -->
+      <!-- MODULE 12: ONBOARDING                 -->
+      <!-- ────────────────────────────────────── -->
+      <section class="space-y-4">
+        <p
+          class="font-mono text-[9px] font-bold uppercase tracking-[0.2em] text-white/20 pb-3 border-b border-white/[0.06]"
+        >
+          12 — Онбординг
+        </p>
+
+        <div
+          class="glass holo-shimmer rounded-3xl p-8 relative overflow-hidden"
+        >
+          <!-- Ambient aura -->
+          <div
+            class="absolute top-0 left-1/2 -translate-x-1/2 w-64 h-64 rounded-full pointer-events-none"
+            style="background: rgba(123, 97, 255, 0.12); filter: blur(80px)"
+          ></div>
+
+          <div
+            class="relative flex flex-col items-center text-center space-y-6"
+          >
+            <!-- Illustration placeholder -->
+            <div
+              class="w-32 h-32 rounded-3xl bg-white/[0.02] border border-white/[0.06] flex items-center justify-center relative overflow-hidden"
+            >
+              <!-- Заглушка. Замените на <img src="assets/onboarding-1.png" ...> -->
+              <div class="text-6xl opacity-70">🌌</div>
+              <div
+                class="absolute inset-0 pointer-events-none"
+                style="
+                  background: radial-gradient(
+                    circle at center,
+                    transparent 30%,
+                    rgba(123, 97, 255, 0.1) 100%
+                  );
+                "
+              ></div>
+            </div>
+
+            <!-- Step counter -->
+            <div
+              class="font-mono text-[9px] font-bold uppercase tracking-[0.2em] text-holo/60"
+            >
+              Шаг 1 из 5
+            </div>
+
+            <!-- Title -->
+            <div class="space-y-3">
+              <h2
+                class="text-[28px] font-bold tracking-[-0.03em] text-white leading-tight"
+              >
+                Добро пожаловать
+              </h2>
+              <p
+                class="text-[14px] font-light text-white/50 tracking-[-0.03em] leading-[1.7] max-w-[280px] mx-auto"
+              >
+                Этот тест покажет, как работает ваша энергетическая система — от
+                корней до кроны, от тела до смысла.
+              </p>
+            </div>
+
+            <!-- Dots indicator -->
+            <div class="flex items-center gap-2 pt-2">
+              <div
+                class="w-6 h-1 rounded-full bg-holo"
+                style="box-shadow: 0 0 6px rgba(123, 97, 255, 0.5)"
+              ></div>
+              <div class="w-1 h-1 rounded-full bg-white/20"></div>
+              <div class="w-1 h-1 rounded-full bg-white/20"></div>
+              <div class="w-1 h-1 rounded-full bg-white/20"></div>
+              <div class="w-1 h-1 rounded-full bg-white/20"></div>
+            </div>
+
+            <!-- Actions -->
+            <div class="w-full space-y-3 pt-2">
+              <button
+                class="btn-holo w-full py-4 rounded-2xl font-semibold text-[15px] tracking-[-0.02em] flex items-center justify-center gap-2"
+              >
+                Далее
+                <svg
+                  class="w-4 h-4 opacity-70"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="1.5"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3"
+                  />
+                </svg>
+              </button>
+              <button
+                class="w-full py-2 text-[13px] font-medium text-white/30 hover:text-white/60 transition-colors"
+              >
+                Пропустить онбординг
+              </button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ────────────────────────────────────── -->
+      <!-- MODULE 13: BOTTOM NAVIGATION          -->
+      <!-- ────────────────────────────────────── -->
+      <section class="space-y-4">
+        <p
+          class="font-mono text-[9px] font-bold uppercase tracking-[0.2em] text-white/20 pb-3 border-b border-white/[0.06]"
+        >
+          13 — Нижнее меню
+        </p>
+
+        <!-- Demo (не sticky, чтобы видеть в потоке) -->
+        <div class="glass-solid rounded-3xl p-2 flex items-center gap-1">
+          <!-- Home — INACTIVE -->
+          <button
+            class="flex-1 flex flex-col items-center gap-1 py-2.5 rounded-2xl hover:bg-white/[0.03] transition-all group"
+          >
+            <svg
+              class="w-5 h-5 text-white/40 group-hover:text-white/70 transition-colors"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.5"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                d="M2.25 12l8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25"
+              />
+            </svg>
+            <span
+              class="font-mono text-[8px] font-bold uppercase tracking-[0.12em] text-white/40 group-hover:text-white/70 transition-colors"
+              >Главная</span
+            >
+          </button>
+
+          <!-- Result — ACTIVE -->
+          <button
+            class="flex-1 flex flex-col items-center gap-1 py-2.5 rounded-2xl bg-holo/[0.08] border border-holo/20"
+            style="box-shadow: inset 0 0 12px rgba(123, 97, 255, 0.1)"
+          >
+            <svg
+              class="w-5 h-5 text-holo"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.5"
+              viewBox="0 0 24 24"
+              style="filter: drop-shadow(0 0 4px rgba(123, 97, 255, 0.5))"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                d="M3.75 3v11.25A2.25 2.25 0 006 16.5h2.25M3.75 3h-1.5m1.5 0h16.5m0 0h1.5m-1.5 0v11.25A2.25 2.25 0 0118 16.5h-2.25m-7.5 0h7.5m-7.5 0l-1 3m8.5-3l1 3m0 0l.5 1.5m-.5-1.5h-9.5m0 0l-.5 1.5m.75-9l3-3 2.148 2.148A12.061 12.061 0 0116.5 7.605"
+              />
+            </svg>
+            <span
+              class="font-mono text-[8px] font-bold uppercase tracking-[0.12em] text-holo"
+              >Результат</span
+            >
+          </button>
+
+          <!-- History — INACTIVE -->
+          <button
+            class="flex-1 flex flex-col items-center gap-1 py-2.5 rounded-2xl hover:bg-white/[0.03] transition-all group"
+          >
+            <svg
+              class="w-5 h-5 text-white/40 group-hover:text-white/70 transition-colors"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.5"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                d="M2.25 18L9 11.25l4.306 4.307a11.95 11.95 0 015.814-5.519l2.74-1.22m0 0l-5.94-2.28m5.94 2.28l-2.28 5.941"
+              />
+            </svg>
+            <span
+              class="font-mono text-[8px] font-bold uppercase tracking-[0.12em] text-white/40 group-hover:text-white/70 transition-colors"
+              >История</span
+            >
+          </button>
+
+          <!-- About — INACTIVE -->
+          <button
+            class="flex-1 flex flex-col items-center gap-1 py-2.5 rounded-2xl hover:bg-white/[0.03] transition-all group"
+          >
+            <svg
+              class="w-5 h-5 text-white/40 group-hover:text-white/70 transition-colors"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.5"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                d="M9.594 3.94c.09-.542.56-.94 1.11-.94h2.593c.55 0 1.02.398 1.11.94l.213 1.281c.063.374.313.686.645.87.074.04.147.083.22.127.325.196.72.257 1.075.124l1.217-.456a1.125 1.125 0 011.37.49l1.296 2.247a1.125 1.125 0 01-.26 1.431l-1.003.827c-.293.24-.438.613-.431.992a6.759 6.759 0 010 .255c-.007.378.138.75.43.99l1.005.828c.424.35.534.954.26 1.43l-1.298 2.247a1.125 1.125 0 01-1.369.491l-1.217-.456c-.355-.133-.75-.072-1.076.124a6.57 6.57 0 01-.22.128c-.331.183-.581.495-.644.869l-.213 1.28c-.09.543-.56.941-1.11.941h-2.594c-.55 0-1.02-.398-1.11-.94l-.213-1.281c-.062-.374-.312-.686-.644-.87a6.52 6.52 0 01-.22-.127c-.325-.196-.72-.257-1.076-.124l-1.217.456a1.125 1.125 0 01-1.369-.49l-1.297-2.247a1.125 1.125 0 01.26-1.431l1.004-.827c.292-.24.437-.613.43-.992a6.932 6.932 0 010-.255c.007-.378-.138-.75-.43-.99l-1.004-.828a1.125 1.125 0 01-.26-1.43l1.297-2.247a1.125 1.125 0 011.37-.491l1.216.456c.356.133.751.072 1.076-.124.072-.044.146-.087.22-.128.332-.183.582-.495.644-.869l.214-1.281z"
+              />
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+              />
+            </svg>
+            <span
+              class="font-mono text-[8px] font-bold uppercase tracking-[0.12em] text-white/40 group-hover:text-white/70 transition-colors"
+              >О тесте</span
+            >
+          </button>
+        </div>
+
+        <!-- Спецификация -->
+        <div class="glass rounded-2xl p-4 space-y-2">
+          <p
+            class="font-mono text-[9px] font-bold uppercase tracking-[0.15em] text-white/30"
+          >
+            В реальном приложении
+          </p>
+          <p class="text-[12px] font-light text-white/50 leading-[1.7]">
+            Меню фиксируется внизу экрана (position: fixed, bottom: 16px,
+            left/right: 16px). Показывается на: Главной, Результате, Истории, «О
+            тесте». Скрывается на: онбординге, экране теста, модальных окнах.
+          </p>
+        </div>
+      </section>
+
+      <!-- ═══ FOOTER ═══ -->
+      <footer class="text-center pt-8 space-y-2">
+        <p
+          class="font-mono text-[9px] font-bold uppercase tracking-[0.2em] text-white/10"
+        >
+          VOIDSENSE DESIGN SYSTEM v1.0
+        </p>
+        <p class="text-[11px] font-light text-white/15">
+          Void Interface • Энергетический профиль • Каша Малашная
+        </p>
+      </footer>
+    </div>
+  </body>
+</html>

@@ -1,0 +1,1222 @@
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+    />
+    <title>Энергетический профиль</title>
+
+    <!-- VK Bridge (Локальный) -->
+    <script src="js/vk-bridge-lib.js"></script>
+
+    <!-- Tailwind (Локальный и безопасный) -->
+    <script src="js/tailwind.js"></script>
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Sora:wght@200;300;400;500;600;700&family=Space+Mono:wght@400;700&display=swap"
+      rel="stylesheet"
+    />
+
+    <!-- Tailwind Config -->
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            fontFamily: {
+              sora: ["Sora", "sans-serif"],
+              mono: ['"Space Mono"', "monospace"],
+            },
+            colors: {
+              void: "#050507",
+              holo: "#7B61FF",
+              "st-pos": "#4ADE80",
+              "st-neg": "#FB7185",
+              ch: {
+                1: "#EF4444",
+                2: "#F97316",
+                3: "#EAB308",
+                4: "#22C55E",
+                5: "#EC4899",
+                6: "#A855F7",
+                7: "#38BDF8",
+                8: "#2563EB",
+                9: "#8B5CF6",
+              },
+            },
+            borderRadius: { "2xl": "16px", "3xl": "24px" },
+          },
+        },
+      };
+    </script>
+
+    <style>
+      /* ═══════════════════════════════════════════
+       VOIDSENSE v2 — ЧИТАЕМЫЙ НА ЯРКОМ СВЕТЕ
+       ═══════════════════════════════════════════ */
+
+      /* БАЗА: не чёрный, а тёмно-синий — видно на солнце */
+      body {
+        background: #0b1120;
+        font-size: 16px;
+        line-height: 1.7;
+      }
+
+      /* ═══ GLASS ═══ */
+      .glass {
+        background: linear-gradient(
+          135deg,
+          rgba(20, 28, 55, 0.88) 0%,
+          rgba(15, 22, 45, 0.82) 50%,
+          rgba(18, 25, 50, 0.85) 100%
+        );
+        backdrop-filter: blur(40px) saturate(1.6);
+        -webkit-backdrop-filter: blur(40px) saturate(1.6);
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        box-shadow:
+          inset 0 0.5px 0 0 rgba(255, 255, 255, 0.1),
+          0 8px 32px -8px rgba(0, 0, 0, 0.4);
+      }
+      .glass-solid {
+        background: linear-gradient(
+          135deg,
+          rgba(14, 20, 40, 0.95) 0%,
+          rgba(12, 18, 35, 0.92) 100%
+        );
+        backdrop-filter: blur(60px) saturate(1.8);
+        -webkit-backdrop-filter: blur(60px) saturate(1.8);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+      }
+
+      /* ═══ HOLO SHIMMER ═══ */
+      .holo-shimmer {
+        position: relative;
+        overflow: hidden;
+      }
+      .holo-shimmer::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(
+          105deg,
+          transparent 30%,
+          rgba(123, 97, 255, 0.06) 38%,
+          rgba(0, 176, 255, 0.05) 44%,
+          rgba(224, 64, 251, 0.04) 50%,
+          transparent 58%
+        );
+        background-size: 250% 100%;
+        animation: holo-slide 5s ease-in-out infinite;
+        pointer-events: none;
+        border-radius: inherit;
+        z-index: 1;
+      }
+      .holo-shimmer > * {
+        position: relative;
+        z-index: 2;
+      }
+      @keyframes holo-slide {
+        0%,
+        100% {
+          background-position: 200% center;
+        }
+        50% {
+          background-position: -50% center;
+        }
+      }
+
+      /* ═══ AMBIENT & ANIMATIONS ═══ */
+      @keyframes drift {
+        0%,
+        100% {
+          transform: translate(0, 0) scale(1);
+        }
+        33% {
+          transform: translate(15px, -20px) scale(1.05);
+        }
+        66% {
+          transform: translate(-10px, 15px) scale(0.97);
+        }
+      }
+      @keyframes glow-breathe {
+        0%,
+        100% {
+          opacity: 0.3;
+          transform: scale(1);
+        }
+        50% {
+          opacity: 0.6;
+          transform: scale(1.08);
+        }
+      }
+
+      /* ═══ BUTTONS ═══ */
+      .btn-holo {
+        background: linear-gradient(135deg, #7b61ff 0%, #e040fb 100%);
+        color: white;
+        box-shadow: 0 0 28px rgba(123, 97, 255, 0.3);
+        transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+      }
+      .btn-holo:hover {
+        box-shadow: 0 0 40px rgba(123, 97, 255, 0.45);
+        transform: translateY(-1px);
+      }
+      .btn-holo:active {
+        transform: scale(0.97);
+      }
+
+      /* ═══ CENTER CIRCLES ═══ */
+      .ch-circle {
+        position: relative;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      .ch-circle .ch-ring {
+        position: absolute;
+        inset: 0;
+        border-radius: 50%;
+        border: 1.5px solid;
+        opacity: 0.4;
+      }
+      .ch-circle .ch-fill {
+        border-radius: 50%;
+        transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+      }
+
+      /* ═══ SCREENS ═══ */
+      .screen {
+        display: none;
+      }
+      .screen.active {
+        display: block;
+      }
+      .content-area {
+        padding-bottom: 100px;
+      }
+
+      /* ═══ ЧИТАЕМОСТЬ: ШРИФТЫ ═══ */
+      /* Базовый текст — крупный и плотный */
+      .text-\[13px\] {
+        font-size: 15px !important;
+      }
+      .text-\[14px\] {
+        font-size: 16px !important;
+      }
+      .text-\[15px\] {
+        font-size: 16px !important;
+      }
+      .text-\[11px\] {
+        font-size: 13px !important;
+      }
+      .text-\[12px\] {
+        font-size: 14px !important;
+      }
+
+      /* Mono-метки — не мельче 11px */
+      .font-mono.text-\[8px\] {
+        font-size: 11px !important;
+      }
+      .font-mono.text-\[9px\] {
+        font-size: 11px !important;
+      }
+      .font-mono.text-\[10px\] {
+        font-size: 12px !important;
+      }
+
+      /* Длинные тексты — нормальный вес, не тонкий */
+      p.font-light,
+      .text-\[13px\].font-light,
+      .text-\[14px\].font-light,
+      .text-\[15px\].font-light,
+      .text-\[16px\].font-light {
+        font-weight: 400 !important;
+        line-height: 1.75 !important;
+      }
+
+      /* ═══ ЧИТАЕМОСТЬ: КОНТРАСТ ТЕКСТА ═══ */
+      .text-white\/15,
+      .text-white\/20 {
+        color: rgba(255, 255, 255, 0.55) !important;
+      }
+      .text-white\/25 {
+        color: rgba(255, 255, 255, 0.6) !important;
+      }
+      .text-white\/30 {
+        color: rgba(255, 255, 255, 0.65) !important;
+      }
+      .text-white\/35 {
+        color: rgba(255, 255, 255, 0.68) !important;
+      }
+      .text-white\/40 {
+        color: rgba(255, 255, 255, 0.72) !important;
+      }
+      .text-white\/50 {
+        color: rgba(255, 255, 255, 0.78) !important;
+      }
+      .text-white\/60 {
+        color: rgba(255, 255, 255, 0.85) !important;
+      }
+      .text-white\/70 {
+        color: rgba(255, 255, 255, 0.9) !important;
+      }
+      .text-white\/80 {
+        color: rgba(255, 255, 255, 0.95) !important;
+      }
+      .text-white\/85 {
+        color: rgba(255, 255, 255, 0.97) !important;
+      }
+
+      /* ═══ SCROLLBAR ═══ */
+      ::-webkit-scrollbar {
+        width: 4px;
+      }
+      ::-webkit-scrollbar-track {
+        background: transparent;
+      }
+      ::-webkit-scrollbar-thumb {
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 2px;
+      }
+      ::selection {
+        background: rgba(123, 97, 255, 0.3);
+        color: white;
+      }
+
+      /* ═══ ИНДИКАТОР МИРОВ ═══ */
+      .world-label {
+        color: rgba(255, 255, 255, 0.3) !important;
+        transition: color 0.3s ease;
+      }
+      .world-label.world-active {
+        color: #7b61ff !important;
+        text-shadow: 0 0 8px rgba(123, 97, 255, 0.5);
+      }
+    </style>
+  </head>
+
+  <body class="font-sora text-white/80 min-h-screen relative overflow-x-hidden">
+    <!-- ═══ AMBIENT BACKGROUND (always visible) ═══ -->
+    <div class="fixed inset-0 pointer-events-none overflow-hidden z-0">
+      <div
+        style="
+          position: absolute;
+          top: -10%;
+          left: -15%;
+          width: 400px;
+          height: 400px;
+          border-radius: 50%;
+          background: rgba(30, 27, 120, 0.025);
+          filter: blur(140px);
+          animation: drift 20s ease-in-out infinite;
+        "
+      ></div>
+      <div
+        style="
+          position: absolute;
+          bottom: -15%;
+          right: -10%;
+          width: 350px;
+          height: 350px;
+          border-radius: 50%;
+          background: rgba(90, 50, 160, 0.02);
+          filter: blur(130px);
+          animation: drift 24s ease-in-out infinite 5s;
+        "
+      ></div>
+    </div>
+
+    <!-- ═══ NOISE (always visible) ═══ -->
+    <div
+      class="fixed inset-0 pointer-events-none z-[1]"
+      style="
+        opacity: 0.012;
+        background-image: url(&quot;data:image/svg+xml,%3Csvg viewBox=%220 0 256 256%22 xmlns=%22http://www.w3.org/2000/svg%22%3E%3Cfilter id=%22n%22%3E%3CfeTurbulence type=%22fractalNoise%22 baseFrequency=%22.85%22 numOctaves=%224%22 stitchTiles=%22stitch%22/%3E%3C/filter%3E%3Crect width=%22100%25%22 height=%22100%25%22 filter=%22url(%23n)%22/%3E%3C/svg%3E&quot;);
+      "
+    ></div>
+
+    <!-- ═══════════════════════════════════════════ -->
+    <!-- SCREEN: ONBOARDING                        -->
+    <!-- ═══════════════════════════════════════════ -->
+    <div id="screen-onboarding" class="screen">
+      <div
+        class="relative z-10 max-w-[420px] mx-auto px-5 min-h-screen flex items-center justify-center"
+      >
+        <div
+          class="glass holo-shimmer rounded-3xl p-8 w-full relative overflow-hidden"
+        >
+          <div
+            class="absolute top-0 left-1/2 -translate-x-1/2 w-64 h-64 rounded-full pointer-events-none"
+            style="background: rgba(123, 97, 255, 0.12); filter: blur(80px)"
+          ></div>
+          <div
+            class="relative flex flex-col items-center text-center space-y-6"
+            id="onboarding-content"
+          >
+            <!-- Рендерится динамически через js/onboarding.js -->
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════ -->
+    <!-- SCREEN: HOME                              -->
+    <!-- ═══════════════════════════════════════════ -->
+    <div id="screen-home" class="screen">
+      <div class="relative z-10 max-w-[420px] mx-auto px-5 pt-10 content-area">
+        <!-- Header -->
+        <header class="flex items-center justify-between mb-10">
+          <div class="flex items-center gap-3">
+            <div
+              class="w-11 h-11 rounded-2xl bg-gradient-to-br from-holo/20 to-holo/5 border border-white/10 flex items-center justify-center shadow-[inset_0_0_12px_rgba(123,97,255,0.15)]"
+            >
+              <span class="text-xl">🍲</span>
+            </div>
+            <div>
+              <div
+                class="font-bold text-sm tracking-[-0.03em] leading-none text-white"
+              >
+                Каша Малашная
+              </div>
+              <div
+                class="font-mono text-[9px] font-bold text-holo/70 tracking-[0.15em] uppercase mt-0.5"
+              >
+                Энергетический профиль
+              </div>
+            </div>
+          </div>
+        </header>
+
+        <!-- Hero -->
+        <section class="text-center space-y-6 mb-10">
+          <div
+            class="inline-flex items-center gap-2.5 px-4 py-2 rounded-full border border-holo/15 bg-holo/[0.04]"
+          >
+            <span
+              class="w-1.5 h-1.5 rounded-full bg-holo"
+              style="
+                box-shadow: 0 0 8px rgba(123, 97, 255, 0.6);
+                animation: glow-breathe 2.5s ease-in-out infinite;
+              "
+            ></span>
+            <span
+              class="font-mono text-[9px] font-bold uppercase tracking-[0.18em] text-holo/80"
+              >13 центров • 3 мира</span
+            >
+          </div>
+          <div>
+            <h1
+              class="text-[36px] font-extralight tracking-[-0.04em] leading-[0.95] text-white/80"
+            >
+              Узнай свой
+            </h1>
+            <h1
+              class="text-[36px] font-bold tracking-[-0.04em] leading-[1.1] text-white mt-1"
+            >
+              энергетический
+              <span
+                style="
+                  background: linear-gradient(90deg, #7b61ff, #38bdf8, #8b5cf6);
+                  -webkit-background-clip: text;
+                  -webkit-text-fill-color: transparent;
+                "
+                >профиль</span
+              >
+            </h1>
+          </div>
+          <p
+            class="text-[14px] font-light text-white/40 tracking-[-0.03em] leading-[1.7] max-w-[280px] mx-auto"
+          >
+            127 вопросов. 20 минут. Полная карта центров, архетип внутреннего
+            ребёнка и персональная сказка.
+          </p>
+          <!-- Кнопка меняется динамически через js/app.js -->
+          <!-- Контейнер для кнопок старта / продолжения -->
+          <div class="flex flex-col items-center gap-3">
+            <button
+              class="btn-holo holo-shimmer mx-auto px-8 py-4 rounded-2xl font-semibold text-[15px] tracking-[-0.02em] flex items-center gap-2.5"
+              id="home-start-btn"
+              onclick="navigateTo('test')"
+            >
+              <span id="home-start-btn-text">Начать диагностику</span>
+              <svg
+                class="w-4 h-4 opacity-70"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.5"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3"
+                />
+              </svg>
+            </button>
+
+            <!-- Третичная кнопка сброса (скрыта по умолчанию) -->
+            <button
+              class="py-2 text-[13px] font-medium text-white/40 hover:text-white/70 transition-colors tracking-tight hidden"
+              id="home-reset-btn"
+              onclick="resetTest()"
+            >
+              Пройти заново
+            </button>
+          </div>
+        </section>
+
+        <!-- Last result preview (shows when test completed) -->
+        <div id="home-last-result" class="hidden">
+          <div class="glass rounded-3xl p-5 space-y-4">
+            <div class="flex items-center justify-between">
+              <span
+                class="font-mono text-[9px] font-bold uppercase tracking-[0.18em] text-holo/60"
+                >Последний результат</span
+              >
+              <span
+                class="font-mono text-[9px] font-bold text-white/20"
+                id="home-last-date"
+              ></span>
+            </div>
+            <div class="flex items-baseline gap-1 justify-center">
+              <span
+                class="text-[48px] font-extralight tracking-[-0.04em] leading-none text-white/85"
+                id="home-last-percent"
+                >—</span
+              >
+              <span class="text-[18px] font-extralight text-white/25">%</span>
+            </div>
+            <button
+              class="glass w-full py-3 rounded-2xl font-medium text-[13px] text-white/70 hover:text-white transition-all"
+              onclick="navigateTo('result')"
+            >
+              Смотреть полный результат →
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════ -->
+    <!-- SCREEN: TEST                              -->
+    <!-- ═══════════════════════════════════════════ -->
+    <div id="screen-test" class="screen">
+      <div
+        class="relative z-10 max-w-[420px] mx-auto px-5 pt-6 pb-8 min-h-screen flex flex-col"
+      >
+        <!-- Header с кнопкой закрытия -->
+        <div class="flex items-center justify-between mb-4">
+          <button
+            class="w-9 h-9 rounded-xl glass flex items-center justify-center text-white/40 hover:text-white/80 hover:border-white/15 transition-all active:scale-95"
+            id="test-close-btn"
+            title="Сохранить и выйти"
+          >
+            <svg
+              class="w-4 h-4"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.5"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                d="M6 18L18 6M6 6l12 12"
+              />
+            </svg>
+          </button>
+          <span
+            class="font-mono text-[11px] font-bold text-white/40 uppercase tracking-widest"
+            >Тест</span
+          >
+          <div class="w-9"></div>
+          <!-- Пустой блок для симметрии -->
+        </div>
+        <!-- Progress bar Прогресс бар -->
+        <div class="mb-6">
+          <div class="flex items-center justify-between mb-2">
+            <div class="flex gap-4">
+              <span
+                class="world-label font-mono text-[11px] font-bold uppercase tracking-[0.15em]"
+                id="test-world-nav"
+                >Навь</span
+              >
+              <span
+                class="world-label font-mono text-[11px] font-bold uppercase tracking-[0.15em]"
+                id="test-world-yav"
+                >Явь</span
+              >
+              <span
+                class="world-label font-mono text-[11px] font-bold uppercase tracking-[0.15em]"
+                id="test-world-slav"
+                >Славь</span
+              >
+            </div>
+            <span
+              class="font-mono text-[10px] font-bold text-white/30"
+              id="test-counter"
+              >1 / 127</span
+            >
+          </div>
+          <div class="h-[6px] bg-white/[0.08] rounded-full overflow-hidden">
+            <div
+              class="h-full rounded-full transition-all duration-500"
+              id="test-progress-fill"
+              style="
+                width: 1%;
+                background: linear-gradient(90deg, #7b61ff, #38bdf8, #8b5cf6);
+                box-shadow: 0 0 12px rgba(123, 97, 255, 0.35);
+              "
+            ></div>
+          </div>
+        </div>
+
+        <!-- Question area (filled dynamically) -->
+        <div
+          class="flex-1 flex flex-col justify-center"
+          id="test-question-area"
+        >
+          <div class="glass rounded-3xl p-6 space-y-5">
+            <div class="flex items-center justify-between">
+              <span
+                class="font-mono text-[9px] font-bold uppercase tracking-[0.18em] text-holo/70"
+                id="test-q-meta"
+                >Вопрос 1 / 70</span
+              >
+              <div class="flex items-center gap-2" id="test-q-center-badge">
+                <div
+                  class="w-2 h-2 rounded-full bg-ch-1"
+                  style="box-shadow: 0 0 6px rgba(239, 68, 68, 0.5)"
+                ></div>
+                <span
+                  class="font-mono text-[9px] font-bold uppercase tracking-[0.15em] text-white/20"
+                  >Исток</span
+                >
+              </div>
+            </div>
+            <p
+              class="text-[15px] font-light text-white/80 tracking-[-0.03em] leading-[1.7]"
+              id="test-q-text"
+            >
+              Загрузка вопроса...
+            </p>
+            <div id="test-q-options"></div>
+          </div>
+        </div>
+
+        <!-- Navigation -->
+        <div class="flex items-center justify-between pt-4 mt-auto">
+          <button
+            class="text-[13px] font-medium text-white/40 hover:text-white/70 transition-colors flex items-center gap-1.5"
+            id="test-btn-back"
+          >
+            <svg
+              class="w-3.5 h-3.5"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.5"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18"
+              />
+            </svg>
+            Назад
+          </button>
+          <button
+            class="btn-holo px-5 py-2.5 rounded-2xl font-semibold text-[13px] tracking-[-0.02em] flex items-center gap-2 opacity-50 pointer-events-none"
+            id="test-btn-next"
+          >
+            Далее
+            <svg
+              class="w-3.5 h-3.5 opacity-70"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.5"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3"
+              />
+            </svg>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════ -->
+    <!-- SCREEN: RESULT (единая лента с якорями)   -->
+    <!-- ═══════════════════════════════════════════ -->
+    <div id="screen-result" class="screen">
+      <div class="relative z-10 max-w-[420px] mx-auto px-5 pt-4 content-area">
+        <!-- ═══ STICKY NAV (5 якорей) ═══ -->
+        <nav class="sticky top-2 z-30 mb-6">
+          <div
+            class="glass-solid p-1.5 rounded-2xl flex gap-1 overflow-x-auto"
+            id="result-nav"
+            style="scrollbar-width: none"
+          >
+            <button
+              class="result-anchor flex-shrink-0 px-4 py-2 rounded-xl font-semibold text-[11px] tracking-[-0.02em] transition-all"
+              data-target="section-schema"
+            >
+              Схема
+            </button>
+            <button
+              class="result-anchor flex-shrink-0 px-4 py-2 rounded-xl font-medium text-[11px] tracking-[-0.02em] text-white/40 transition-all"
+              data-target="section-centers"
+            >
+              Центры
+            </button>
+            <button
+              class="result-anchor flex-shrink-0 px-4 py-2 rounded-xl font-medium text-[11px] tracking-[-0.02em] text-white/40 transition-all"
+              data-target="section-child"
+            >
+              Ребёнок
+            </button>
+            <button
+              class="result-anchor flex-shrink-0 px-4 py-2 rounded-xl font-medium text-[11px] tracking-[-0.02em] text-white/40 transition-all"
+              data-target="section-pattern"
+            >
+              Паттерн
+            </button>
+            <button
+              class="result-anchor flex-shrink-0 px-4 py-2 rounded-xl font-medium text-[11px] tracking-[-0.02em] text-white/40 transition-all"
+              data-target="section-advice"
+            >
+              Советы
+            </button>
+          </div>
+        </nav>
+
+        <!-- ═══ CONTENT — единая лента ═══ -->
+        <div class="space-y-8">
+          <!-- ─── СЕКЦИЯ 1: СХЕМА ─── -->
+          <section id="section-schema" class="scroll-mt-24">
+            <div class="flex items-center gap-2 mb-4">
+              <span class="w-4 h-px bg-holo/40"></span>
+              <span
+                class="font-mono text-[9px] font-bold uppercase tracking-[0.2em] text-holo/70"
+                >01 · Схема центров</span
+              >
+            </div>
+            <div
+              class="glass holo-shimmer rounded-3xl p-6"
+              id="result-schema-content"
+            >
+              <p class="text-center text-white/30 text-sm font-light py-12">
+                Схема загрузится после прохождения теста
+              </p>
+            </div>
+          </section>
+
+          <!-- ─── СЕКЦИЯ 2: ЦЕНТРЫ ─── -->
+          <section id="section-centers" class="scroll-mt-24">
+            <div class="flex items-center gap-2 mb-4">
+              <span class="w-4 h-px bg-holo/40"></span>
+              <span
+                class="font-mono text-[9px] font-bold uppercase tracking-[0.2em] text-holo/70"
+                >02 · 13 центров</span
+              >
+            </div>
+            <div class="space-y-3" id="result-centers-list">
+              <div class="glass rounded-3xl p-6">
+                <p class="text-center text-white/30 text-sm font-light py-8">
+                  Карточки центров загрузятся после прохождения теста
+                </p>
+              </div>
+            </div>
+          </section>
+
+          <!-- ─── СЕКЦИЯ 3: РЕБЁНОК ─── -->
+          <section id="section-child" class="scroll-mt-24">
+            <div class="flex items-center gap-2 mb-4">
+              <span class="w-4 h-px bg-holo/40"></span>
+              <span
+                class="font-mono text-[9px] font-bold uppercase tracking-[0.2em] text-holo/70"
+                >03 · Внутренний ребёнок</span
+              >
+            </div>
+            <div id="result-child-content">
+              <div class="glass rounded-3xl p-6">
+                <p class="text-center text-white/30 text-sm font-light py-8">
+                  Информация о внутреннем ребёнке загрузится после прохождения
+                  теста
+                </p>
+              </div>
+            </div>
+          </section>
+
+          <!-- ─── СЕКЦИЯ 4: ПАТТЕРН ─── -->
+          <section id="section-pattern" class="scroll-mt-24">
+            <div class="flex items-center gap-2 mb-4">
+              <span class="w-4 h-px bg-holo/40"></span>
+              <span
+                class="font-mono text-[9px] font-bold uppercase tracking-[0.2em] text-holo/70"
+                >04 · Доминирующий паттерн</span
+              >
+            </div>
+            <div id="result-pattern-content">
+              <div class="glass rounded-3xl p-6">
+                <p class="text-center text-white/30 text-sm font-light py-8">
+                  Паттерн определится после прохождения теста
+                </p>
+              </div>
+            </div>
+          </section>
+
+          <!-- ─── СЕКЦИЯ 5: СОВЕТЫ ─── -->
+          <section id="section-advice" class="scroll-mt-24">
+            <div class="flex items-center gap-2 mb-4">
+              <span class="w-4 h-px bg-holo/40"></span>
+              <span
+                class="font-mono text-[9px] font-bold uppercase tracking-[0.2em] text-holo/70"
+                >05 · Рекомендации</span
+              >
+            </div>
+            <div class="space-y-4" id="result-advice-content">
+              <div class="glass rounded-3xl p-6">
+                <p class="text-center text-white/30 text-sm font-light py-8">
+                  Рекомендации загрузятся после прохождения теста
+                </p>
+              </div>
+            </div>
+          </section>
+
+          <!-- ─── СЕКЦИЯ 6: ДЕЙСТВИЯ ─── -->
+          <section id="section-actions" class="scroll-mt-24 pt-4">
+            <div class="flex items-center gap-2 mb-4">
+              <span class="w-4 h-px bg-white/20"></span>
+              <span
+                class="font-mono text-[9px] font-bold uppercase tracking-[0.2em] text-white/40"
+                >Действия</span
+              >
+            </div>
+            <div class="space-y-3">
+              <button
+                class="btn-holo w-full py-4 rounded-2xl font-semibold text-[15px] tracking-[-0.02em] flex items-center justify-center gap-2"
+                onclick="navigateTo('test')"
+              >
+                Пройти тест заново
+                <svg
+                  class="w-4 h-4 opacity-70"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="1.5"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99"
+                  />
+                </svg>
+              </button>
+              <button
+                class="glass w-full py-3.5 rounded-2xl font-medium text-[13px] text-white/70 hover:text-white hover:border-white/[0.12] active:scale-[0.98] transition-all flex items-center justify-center gap-2"
+                onclick="
+                  VK.share(
+                    'Мой энергетический профиль — ' +
+                      (Storage.getLastResult()?.overallHealth || '?') +
+                      '% здоровья. Пройди тест и узнай свой!',
+                    'https://vk.com/kasha_na_noch',
+                  )
+                "
+              >
+                <svg
+                  class="w-4 h-4 text-white/40 group-hover:text-white/70 transition-colors"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="1.5"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    d="M7.217 10.907a2.25 2.25 0 100 2.186m0-2.186c.18.324.283.696.283 1.093s-.103.77-.283 1.093m0-2.186l9.566-5.314m-9.566 7.5l9.566 5.314m0 0a2.25 2.25 0 103.935 2.186 2.25 2.25 0 00-3.935-2.186zm0-12.814a2.25 2.25 0 103.933-2.185 2.25 2.25 0 00-3.933 2.185z"
+                  />
+                </svg>
+                Поделиться результатом
+              </button>
+            </div>
+          </section>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════ -->
+    <!-- SCREEN: HISTORY                           -->
+    <!-- ═══════════════════════════════════════════ -->
+    <div id="screen-history" class="screen">
+      <div class="relative z-10 max-w-[420px] mx-auto px-5 pt-10 content-area">
+        <h2 class="text-[28px] font-bold tracking-[-0.03em] text-white mb-6">
+          История тестов
+        </h2>
+        <div id="history-list">
+          <div class="glass rounded-3xl p-6 text-center">
+            <div class="text-4xl mb-4 opacity-50">📈</div>
+            <p
+              class="text-[14px] font-light text-white/40 tracking-[-0.03em] leading-[1.7]"
+            >
+              Здесь появится хронология ваших тестов. Пройдите первый тест,
+              чтобы начать отслеживать динамику.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════ -->
+    <!-- SCREEN: ABOUT                             -->
+    <!-- ═══════════════════════════════════════════ -->
+    <div id="screen-about" class="screen">
+      <div
+        class="relative z-10 max-w-[420px] mx-auto px-5 pt-10 content-area space-y-6"
+      >
+        <h2 class="text-[28px] font-bold tracking-[-0.03em] text-white">
+          О тесте
+        </h2>
+
+        <!-- Methodology -->
+        <div class="glass rounded-3xl p-6 space-y-4">
+          <h3
+            class="font-semibold text-[15px] text-white/80 tracking-[-0.02em]"
+          >
+            Методология
+          </h3>
+          <p
+            class="text-[13px] font-light text-white/50 tracking-[-0.03em] leading-[1.7]"
+          >
+            Опросник основан на принципах телесно-ориентированной психотерапии
+            (В. Райх, А. Лоуэн), поливагальной теории (С. Порджес), фасциальной
+            анатомии (Т. Майерс) и сказкотерапии (Т. Зинкевич-Евстигнеева). 13
+            энергетических центров — синтез индийской чакральной системы и
+            славянской знахарской традиции.
+          </p>
+        </div>
+
+        <!-- Disclaimer -->
+        <div class="glass rounded-3xl p-6 space-y-4">
+          <h3
+            class="font-semibold text-[15px] text-white/80 tracking-[-0.02em]"
+          >
+            Ограничения
+          </h3>
+          <p
+            class="text-[13px] font-light text-white/50 tracking-[-0.03em] leading-[1.7]"
+          >
+            Это инструмент самопознания, а не медицинская или психиатрическая
+            диагностика. Результаты носят рекомендательный характер и не
+            заменяют консультацию специалиста.
+          </p>
+        </div>
+
+        <!-- Link to group -->
+        <a
+          href="https://vk.com/kasha_na_noch"
+          target="_blank"
+          class="glass rounded-3xl p-5 flex items-center justify-between hover:border-white/[0.12] transition-all block"
+        >
+          <div class="flex items-center gap-3">
+            <span class="text-xl">🍲</span>
+            <div>
+              <div
+                class="font-semibold text-[13px] text-white/80 tracking-[-0.02em]"
+              >
+                Каша Малашная
+              </div>
+              <div
+                class="font-mono text-[9px] font-bold text-white/30 uppercase tracking-[0.1em]"
+              >
+                Сказки для детей и взрослых
+              </div>
+            </div>
+          </div>
+          <svg
+            class="w-4 h-4 text-white/20"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.5"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              d="M13.5 6H5.25A2.25 2.25 0 003 8.25v10.5A2.25 2.25 0 005.25 21h10.5A2.25 2.25 0 0018 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25"
+            />
+          </svg>
+        </a>
+      </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════ -->
+    <!-- BOTTOM NAVIGATION (fixed)                 -->
+    <!-- ═══════════════════════════════════════════ -->
+    <nav
+      id="bottom-nav"
+      class="fixed bottom-4 left-4 right-4 z-40 max-w-[420px] mx-auto hidden"
+    >
+      <div class="glass-solid rounded-3xl p-2 flex items-center gap-1">
+        <button
+          class="nav-btn flex-1 flex flex-col items-center gap-1 py-2.5 rounded-2xl transition-all"
+          data-screen="home"
+          onclick="navigateTo('home')"
+        >
+          <svg
+            class="w-5 h-5"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.5"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              d="M2.25 12l8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25"
+            />
+          </svg>
+          <span
+            class="font-mono text-[8px] font-bold uppercase tracking-[0.12em]"
+            >Главная</span
+          >
+        </button>
+        <button
+          class="nav-btn flex-1 flex flex-col items-center gap-1 py-2.5 rounded-2xl transition-all"
+          data-screen="result"
+          onclick="navigateTo('result')"
+        >
+          <svg
+            class="w-5 h-5"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.5"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              d="M3.75 3v11.25A2.25 2.25 0 006 16.5h2.25M3.75 3h-1.5m1.5 0h16.5m0 0h1.5m-1.5 0v11.25A2.25 2.25 0 0118 16.5h-2.25m-7.5 0h7.5m-7.5 0l-1 3m8.5-3l1 3m0 0l.5 1.5m-.5-1.5h-9.5m0 0l-.5 1.5m.75-9l3-3 2.148 2.148A12.061 12.061 0 0116.5 7.605"
+            />
+          </svg>
+          <span
+            class="font-mono text-[8px] font-bold uppercase tracking-[0.12em]"
+            >Результат</span
+          >
+        </button>
+        <button
+          class="nav-btn flex-1 flex flex-col items-center gap-1 py-2.5 rounded-2xl transition-all"
+          data-screen="history"
+          onclick="navigateTo('history')"
+        >
+          <svg
+            class="w-5 h-5"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.5"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              d="M2.25 18L9 11.25l4.306 4.307a11.95 11.95 0 015.814-5.519l2.74-1.22m0 0l-5.94-2.28m5.94 2.28l-2.28 5.941"
+            />
+          </svg>
+          <span
+            class="font-mono text-[8px] font-bold uppercase tracking-[0.12em]"
+            >История</span
+          >
+        </button>
+        <button
+          class="nav-btn flex-1 flex flex-col items-center gap-1 py-2.5 rounded-2xl transition-all"
+          data-screen="about"
+          onclick="navigateTo('about')"
+        >
+          <svg
+            class="w-5 h-5"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.5"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              d="M9.594 3.94c.09-.542.56-.94 1.11-.94h2.593c.55 0 1.02.398 1.11.94l.213 1.281c.063.374.313.686.645.87.074.04.147.083.22.127.325.196.72.257 1.075.124l1.217-.456a1.125 1.125 0 011.37.49l1.296 2.247a1.125 1.125 0 01-.26 1.431l-1.003.827c-.293.24-.438.613-.431.992a6.759 6.759 0 010 .255c-.007.378.138.75.43.99l1.005.828c.424.35.534.954.26 1.43l-1.298 2.247a1.125 1.125 0 01-1.369.491l-1.217-.456c-.355-.133-.75-.072-1.076.124a6.57 6.57 0 01-.22.128c-.331.183-.581.495-.644.869l-.213 1.28c-.09.543-.56.941-1.11.941h-2.594c-.55 0-1.02-.398-1.11-.94l-.213-1.281c-.062-.374-.312-.686-.644-.87a6.52 6.52 0 01-.22-.127c-.325-.196-.72-.257-1.076-.124l-1.217.456a1.125 1.125 0 01-1.369-.49l-1.297-2.247a1.125 1.125 0 01.26-1.431l1.004-.827c.292-.24.437-.613.43-.992a6.932 6.932 0 010-.255c.007-.378-.138-.75-.43-.99l-1.004-.828a1.125 1.125 0 01-.26-1.43l1.297-2.247a1.125 1.125 0 011.37-.491l1.216.456c.356.133.751.072 1.076-.124.072-.044.146-.087.22-.128.332-.183.582-.495.644-.869l.214-1.281z"
+            />
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+            />
+          </svg>
+          <span
+            class="font-mono text-[8px] font-bold uppercase tracking-[0.12em]"
+            >О тесте</span
+          >
+        </button>
+      </div>
+    </nav>
+
+    <!-- ═══════════════════════════════════════════ -->
+    <!-- MODAL: универсальный диалог подтверждения -->
+    <!-- ═══════════════════════════════════════════ -->
+    <div
+      id="modal-confirm"
+      class="fixed inset-0 z-[100] hidden items-center justify-center p-5"
+      style="background: rgba(3, 6, 20, 0.85); backdrop-filter: blur(8px)"
+    >
+      <div
+        class="glass rounded-3xl p-6 max-w-[360px] w-full relative overflow-hidden"
+      >
+        <div
+          class="absolute -top-16 -right-16 w-40 h-40 rounded-full pointer-events-none"
+          style="background: rgba(123, 97, 255, 0.15); filter: blur(60px)"
+        ></div>
+
+        <div class="relative space-y-5">
+          <!-- Иконка -->
+          <div
+            class="w-14 h-14 mx-auto rounded-2xl bg-holo/[0.10] border border-holo/25 flex items-center justify-center"
+          >
+            <svg
+              class="w-6 h-6 text-holo"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.5"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z"
+              />
+            </svg>
+          </div>
+
+          <!-- Заголовок и текст -->
+          <div class="text-center space-y-2">
+            <h3
+              class="text-[18px] font-bold tracking-[-0.03em] text-white"
+              id="modal-title"
+            >
+              Подтверждение
+            </h3>
+            <p
+              class="text-[14px] font-normal text-white/70 tracking-[-0.02em] leading-[1.6]"
+              id="modal-message"
+            >
+              Вы уверены?
+            </p>
+          </div>
+
+          <!-- Кнопки -->
+          <div class="flex flex-col gap-2 pt-2">
+            <button
+              class="btn-holo w-full py-3.5 rounded-2xl font-semibold text-[14px] tracking-[-0.02em]"
+              id="modal-confirm-btn"
+            >
+              Подтвердить
+            </button>
+            <button
+              class="w-full py-3 text-[13px] font-medium text-white/50 hover:text-white/80 transition-colors"
+              id="modal-cancel-btn"
+            >
+              Отмена
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ SCRIPTS ═══ -->
+    <script src="js/vk-storage.js"></script>
+    <script src="js/storage.js"></script>
+    <script src="js/vk-bridge.js"></script>
+    <script src="js/app.js"></script>
+    <script src="js/onboarding.js"></script>
+    <script src="js/test.js"></script>
+    <script src="js/scoring.js"></script>
+    <script src="js/result.js"></script>
+    <script src="js/chronology.js"></script>
+
+    <!-- ═══════════════════════════════════════════ -->
+    <!-- MODAL: универсальный диалог подтверждения -->
+    <!-- ═══════════════════════════════════════════ -->
+    <div
+      id="modal-confirm"
+      class="fixed inset-0 z-[100] hidden items-center justify-center p-5"
+      style="background: rgba(3, 6, 20, 0.85); backdrop-filter: blur(8px)"
+    >
+      <div
+        class="glass rounded-3xl p-6 max-w-[360px] w-full relative overflow-hidden"
+      >
+        <div
+          class="absolute -top-16 -right-16 w-40 h-40 rounded-full pointer-events-none"
+          style="background: rgba(123, 97, 255, 0.15); filter: blur(60px)"
+        ></div>
+
+        <div class="relative space-y-5">
+          <!-- Иконка -->
+          <div
+            class="w-14 h-14 mx-auto rounded-2xl bg-holo/[0.10] border border-holo/25 flex items-center justify-center"
+          >
+            <svg
+              class="w-6 h-6 text-holo"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.5"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z"
+              />
+            </svg>
+          </div>
+
+          <!-- Заголовок и текст -->
+          <div class="text-center space-y-2">
+            <h3
+              class="text-[18px] font-bold tracking-[-0.03em] text-white"
+              id="modal-title"
+            >
+              Подтверждение
+            </h3>
+            <p
+              class="text-[14px] font-normal text-white/70 tracking-[-0.02em] leading-[1.6]"
+              id="modal-message"
+            >
+              Вы уверены?
+            </p>
+          </div>
+
+          <!-- Кнопки -->
+          <div class="flex flex-col gap-2 pt-2">
+            <button
+              class="btn-holo w-full py-3.5 rounded-2xl font-semibold text-[14px] tracking-[-0.02em]"
+              id="modal-confirm-btn"
+            >
+              Подтвердить
+            </button>
+            <button
+              class="w-full py-3 text-[13px] font-medium text-white/50 hover:text-white/80 transition-colors"
+              id="modal-cancel-btn"
+            >
+              Отмена
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>
